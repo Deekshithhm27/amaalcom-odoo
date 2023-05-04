@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_base_visa_candidate" name="Visa Process" sequence="1">
+        <menuitem id="menu_visa_candidate" name="Candidate" sequence="1" action="action_visa_candidate" groups="visa_process.group_service_request_client_spoc"/>
+        <menuitem id="menu_service_request" name="Service Request" sequence="2" action="action_service_request" groups="visa_process.group_service_request_client_spoc,visa_process.group_service_request_manager"/>
+        <!-- <menuitem id="menu_service_request_approval" name="New Service Request" sequence="2" action="action_service_request_approval" groups="visa_process.group_service_request_manager"/> -->
+        <menuitem id="menu_base_visa_configuration" name=" Configuration" sequence="10" groups="visa_process.group_service_request_manager">
+			<menuitem id="menu_visa_candidate_documents" name="Documents" sequence="1" action="action_visa_candidate_documents"/>
+			<menuitem id="menu_service_request_type" name="Service Request Type" sequence="3" action="action_service_request_type"/>
+			<menuitem id="menu_salary_structure" name="Salary Structure" sequence="4" action="action_salary_structure"/>
+	        <menuitem id="menu_employment_duration" name="Employment Duration" sequence="2" action="action_employment_duration"/>
+
+    	</menuitem>
+    </menuitem>
+
+
+</odoo>

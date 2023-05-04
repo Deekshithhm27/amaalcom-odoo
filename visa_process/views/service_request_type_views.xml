@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="service_request_type_form" model="ir.ui.view">
+        <field name="name">Service Request Type</field>
+        <field name="model">service.request.type</field>
+        <field name="arch" type="xml">
+            <form string="Service Request Type">
+                <sheet>
+                    <separator string="Service Request Types" groups="hr.group_hr_user"/>
+                    <group groups="hr.group_hr_user">
+                        <group>
+                           <field name="name"/>
+                           <field name="company_id" invisible="1"/>
+                        </group>
+                    </group>
+                    
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="service_request_type_tree" model="ir.ui.view">
+        <field name="name">Service Request Type</field>
+        <field name="model">service.request.type</field>
+        <field name="arch" type="xml">
+            <tree string="Service Request Type">
+                <field name="name"/>
+				<field name="company_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_visa_filter" model="ir.ui.view">
+        <field name="name">service.request.type.tree</field>
+        <field name="model">service.request.type</field>
+        <field name="arch" type="xml">
+            <search string="Filter">
+                <field name="name" string="Duration"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_service_request_type" model="ir.actions.act_window">
+        <field name="name">Service Request Type</field>
+        <field name="res_model">service.request.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    
+</odoo>

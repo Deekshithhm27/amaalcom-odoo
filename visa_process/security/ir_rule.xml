@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo >
+    <record id="ir_rule_visa_candidate" model="ir.rule">
+        <field name="name">Candidate view by respective Client</field>
+        <field name="model_id" ref="model_visa_candidate"/>
+        <field name="domain_force">[('client_id.id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+    <record id="ir_rule_service_request" model="ir.rule">
+        <field name="name">Service request view by respective client</field>
+        <field name="model_id" ref="model_service_request"/>
+        <field name="domain_force">[('client_id.id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+    <record id="ir_rule_service_request_spoc_approval" model="ir.rule">
+        <field name="name">Service request view by respective Spoc</field>
+        <field name="model_id" ref="model_service_request"/>
+        <field name="domain_force">[('approver_id.user_id.id', '=', user.id),('state','in',('waiting','approved','reject'))]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+ <!--    <record id="ir_rule_service_request_approval" model="ir.rule">
+        <field name="name">Service request view by respective Spoc</field>
+        <field name="model_id" ref="model_service_request_approval"/>
+        <field name="domain_force">[('approver_id.user_id.id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record> -->
+
+  </odoo>

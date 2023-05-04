@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- below record is used to fetch total candidates count in contact screen -->
+    <record  model="ir.actions.act_window" id="candidate_form_action_view_active_by_client">
+        <field name="name">Candidates</field>
+        <field name="res_model">visa.candidate</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('visa_process.visa_candidate_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('visa_process.visa_candidate_form')})]"/>
+        <field name="domain">[('client_id', '=', active_id)]</field>
+    </record>
+
+     <!-- below record is used to fetch total service request count in contact  screen -->
+    <record  model="ir.actions.act_window" id="service_req_form_action_view_active_by_client">
+        <field name="name">Service Request</field>
+        <field name="res_model">service.request</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('visa_process.service_request_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('visa_process.service_request_form')})]"/>
+        <field name="domain">[('client_id', '=', active_id)]</field>
+    </record>
+
+</odoo>

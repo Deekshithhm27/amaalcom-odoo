@@ -1,0 +1,15 @@
+# -*- coding: utf-8 -*-
+# Part of Odoo. See COPYRIGHT & LICENSE files for full copyright and licensing details.
+from . import res_partner
+from . import hr_resume
+from . import hr_skill
+from . import employment_duration
+from . import salary_structure
+from . import visa_candidate
+from . import visa_candidate_documents
+from . import service_request_type
+from . import salary_line
+from . import service_request
+# from . import service_request_approval
+from . import candidate_documents_line
+
