@@ -52,7 +52,7 @@ class LocalTransfer(models.Model):
     dependents_if_any = fields.Binary(string="Dependents if any")
     signed_offer_letter = fields.Binary(string="Signed Offer Letter")
     
-    service_request_type_id = fields.Many2one('service.request.type',string="Service Request Type",required=True,tracking=True)
+    service_request_type_id = fields.Many2one('lt.service.request.type',string="Service Request Type",required=True,tracking=True)
     salary_line_ids = fields.One2many('salary.line', 'local_transfer_id', string="Salary Structure")
     approver_id = fields.Many2one('hr.employee',string="Approver")
 

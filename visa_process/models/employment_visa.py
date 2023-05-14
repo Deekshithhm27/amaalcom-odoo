@@ -56,7 +56,7 @@ class EmploymentVisa(models.Model):
     attested_degree = fields.Binary(string="Attested Degree copy")
     attested_visa_page = fields.Binary(string="Attested visa page")
 
-    service_request_type_id = fields.Many2one('service.request.type',string="Service Request Type",required=True,tracking=True)
+    service_request_type_id = fields.Many2one('ev.service.request.type',string="Service Request Type",required=True,tracking=True)
     salary_line_ids = fields.One2many('salary.line', 'emp_visa_id', string="Salary Structure")
     approver_id = fields.Many2one('hr.employee',string="Approver")
 

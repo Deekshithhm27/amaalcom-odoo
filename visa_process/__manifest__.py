@@ -25,6 +25,8 @@
         'views/employment_duration_views.xml',
         'views/visa_candidate_documents_views.xml',
         'views/service_request_type_views.xml',
+        'views/ev_service_request_type_views.xml',
+        'views/lt_service_request_type_views.xml',
         # 'views/service_request_approval_views.xml',
         'views/service_request_views.xml',
         'views/local_transfer_views.xml',

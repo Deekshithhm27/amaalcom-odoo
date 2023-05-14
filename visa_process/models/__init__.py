@@ -8,6 +8,8 @@ from . import salary_structure
 from . import visa_candidate
 from . import visa_candidate_documents
 from . import service_request_type
+from . import ev_service_request_type
+from . import lt_service_request_type
 from . import salary_line
 from . import service_request
 from . import local_transfer
