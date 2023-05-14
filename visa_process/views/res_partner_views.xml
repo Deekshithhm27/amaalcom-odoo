@@ -13,8 +13,8 @@
                 <button type="action" class="oe_inline oe_stat_button" name="%(visa_process.candidate_form_action_view_active_by_client)d" icon="fa-bars" attrs="{'invisible':[('candidates_count','=',0)]}">
                     <field name="candidates_count" widget="statinfo"/>
                 </button>
-                <button type="action" class="oe_inline oe_stat_button" name="%(visa_process.service_req_form_action_view_active_by_client)d" icon="fa-bars" attrs="{'invisible':[('service_req_count','=',0)]}">
-                    <field name="service_req_count" widget="statinfo"/>
+                <button type="action" class="oe_inline oe_stat_button" name="%(visa_process.employment_visa_form_action_view_active_by_client)d" icon="fa-bars" attrs="{'invisible':[('employment_visa_count','=',0)]}">
+                    <field name="employment_visa_count" widget="statinfo"/>
                 </button>
             </div>
         </field>

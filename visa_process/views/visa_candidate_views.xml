@@ -52,10 +52,13 @@
 		                </page>
                         <!--  -->
                         <page name="work" string="Work Informations">
-                            <group>
-                                <group name="employment_details" string="Employment_details">
+                            <group name="employment_details" string="Employment Details">
+                                <group>
                                     <field name="doj"/>
+                                    <field name="employment_duration"/>
                                     <field name="probation_term"/>
+                                </group>
+                                <group>
                                     <field name="notice_period"/>
                                     <field name="working_days"/>
                                     <field name="weekly_off_days"/>

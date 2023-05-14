@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="employment_visa_form" model="ir.ui.view">
+        <field name="name">Employment Visa</field>
+        <field name="model">employment.visa</field>
+        <field name="arch" type="xml">
+            <form string="Employment Visa">
+                <header>
+                    <field name="state" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}" statusbar_colors='{"approved":"blue","draft":"grey","waiting":"yellow","rejected":"red"}'/>
+                    <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'waiting')]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_reject" string="Reject" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'waiting')]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_cancel" string="Cancel" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'in',('draft','cancel','waiting'))]}"/>
+                </header>
+                <sheet>
+                    <separator string="Employment Visa Information" groups="hr.group_hr_user"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="service_request_type_id"/>
+                            <field name="candidate_id"/>
+                            <field name="dob"/>
+                            <field name="nationality_id"/>
+                            <field name="marital"/>
+                        </group>
+                        <group>
+                        	<field name="email"/>
+                        	<field name="contact_no"/>
+                        	<field name="current_contact"/>
+							<field name="client_id" readonly="1"/>
+							<field name="company_id" invisible="1"/>
+                            <field name="approver_id" attrs="{'invisible': [('approver_id', '=',False)],'readonly':[('approver_id','!=',False)]}"/>
+                        </group>
+
+                    </group>
+                    <notebook>
+                		<page string="Work Informations">
+                			<group name="employment_details" string="Employment Details">
+                                <group>
+                                	<field name="qualification"/>
+                                	<field name="designation"/>
+                                    <field name="employment_duration"/>
+                                    <field name="work_location_id"/>
+                                </group>
+                                <group>
+                                	<field name="weekly_off_days"/>
+                                	<field name="probation_term"/>
+                                    <field name="notice_period"/>
+                                    <field name="doj"/>
+                                </group>
+                                <group string="If Inside Country">
+                                	<field name="iqama_designation"/>
+                                	<field name="attested_from_saudi_cultural"/>
+                                </group>
+                            </group>
+                            <group string="Work Durations">
+                            	<group>
+                            		<field name="working_days"/>
+                            		<field name="annual_vacation"/>
+                            	</group>
+                            	<group>
+                            		<field name="working_hours"/>
+                            	</group>
+                            </group>
+                		</page>
+                		<page string="Visa Details">
+                			<group string="Visa Information">
+	                			<group>
+		                        	<field name="visa_profession"/>
+		                        	<field name="visa_religion"/>
+		                        	<field name="visa_nationality_id"/>
+		                        	<field name="visa_stamping_city_id"/>
+		                        </group>
+		                        <group>
+		                        	<field name="visa_gender"/>
+		                        	<field name="visa_enjaz"/>
+		                        	<field name="no_of_visa"/>
+		                        	<field name="visa_cost"/>
+		                        </group>
+		                        <group string="Medical Insurance">
+		                        	<field name="medical_insurance_for"/>
+		                        </group>
+	                    	</group>
+	                    	<group string="Air Fare Details">
+	                    		<group>
+	                    			<field name="air_fare_for"/>
+	                    			<field name="air_fare_cost"/>
+	                    			<field name="air_fare_frequency"/>
+	                    		</group>
+	                    	</group>
+                		</page>
+                		<page name="salary" string="Salary Structure">
+                            <field name="salary_line_ids">
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="name"/>
+                                            <field name="amount"/>
+                                        </group>
+                                    </group>
+                                </form>
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="amount"/>
+                                </tree>
+                            </field>
+                        </page>
+                		<page name="documents" string="Documents Required">
+                			<group>
+                				<group>
+                					<field name="signed_offer_letter"/>
+                					<field name="passport_copy"/>
+                				</group>
+                				<group>
+                					<field name="attested_degree"/>
+                					<field name="attested_visa_page"/>
+                				</group>
+                			</group>
+                    		<!-- <field mode="tree" nolabel="1" name="document_line_ids">
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="service_request_id" invisible="1"/>
+                                            <field name="name"/>
+                                            <field name="document_availability"/>
+                                            <field name="document_file" attrs="{'readonly': [('document_availability', '=',False)]}"/>
+                                        </group>
+                                    </group>
+                                </form>
+                                <tree editable="bottom">
+                                    <field name="service_request_id" invisible="1"/>
+                                    <field name="name"/>
+                                    <field name="document_availability"/>
+                                    <field name="document_file"/>
+                                </tree>
+                            </field> -->
+                    
+                		</page>
+                		
+                        
+                        <!-- <page string="Required Documents">
+                            <separator string="For Sponsorship Transfer" colspan="4" />
+                            <span class="oe_grey" style="font-size:12;margin-bottom:5px" >
+                                1.Demand letter from his previous company<br/>
+                                2.All passports (original) valid<br/>
+                                3.Iqama valid original<br/>
+                                4.3 release letters from the first sponsor to:<br/>
+                                        <span style="padding-left:50px">A. Immigration(Jawazat)</span><br/>
+                                        <span style="padding-left:50px">B. Our company</span><br/>
+                                        <span style="padding-left:50px">C. Labor office</span><br/>
+                                5. 2 photos<br/>
+                                6. Medical report (on line + hard copy)<br/>
+                                7. Pay traffic plenty (if any)<br/>
+                                8. Agreement on Sponsorship transfer on line in Labor office<br/>
+                                9. Cancel entry exit visa(if he has)<br/>
+                            </span>
+                        </page> -->
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="employment_visa_tree" model="ir.ui.view">
+        <field name="name">Employment Visa</field>
+        <field name="model">employment.visa</field>
+        <field name="arch" type="xml">
+            <tree string="Employment Visa" decoration-danger="state == 'reject'" decoration-muted="state == 'cancel'" decoration-success="state == 'approved'" decoration-primary="state == 'waiting'">
+                <field name="service_request_type_id"/>
+                <field name="name"/>
+                <field name="candidate_id"/>
+                <field name="client_id"/>
+                <field name="designation"/>
+                <field name="doj"/>
+                <field name="employment_duration"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="employment_visa_filter" model="ir.ui.view">
+        <field name="name">employment.visa.tree</field>
+        <field name="model">employment.visa</field>
+        <field name="arch" type="xml">
+            <search string="Filter">
+                <field name="service_request_type_id" string="Service Request Type"/>
+                <field name="candidate_id" string="Candidate"/>
+                <field name="client_id" string="Client"/>
+                <group expand="0" string="Group By...">
+                    <filter name="group_candidate" string="Candidate" context="{'group_by':'candidate_id'}"/>
+                    <filter name="group_client_id" string="Client" context="{'group_by':'client_id'}"/>
+                    <filter name="group_service_request_type_id" string="Request Type" context="{'group_by':'service_request_type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="action_employment_visa" model="ir.actions.act_window">
+        <field name="name">Employment Visa</field>
+        <field name="res_model">employment.visa</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

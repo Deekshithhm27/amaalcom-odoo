@@ -15,7 +15,7 @@ class ResPartner(models.Model):
     next_code = fields.Char(string='Next code',copy=False,default="00001")
 
     candidates_count = fields.Integer(compute='_compute_candidates_count')
-    service_req_count = fields.Integer(compute='_compute_service_req_count')
+    employment_visa_count = fields.Integer(compute='_compute_employment_visa_count')
 
     company_spoc_id = fields.Many2one('hr.employee',string="Accounts Manager",required=True,tracking=True)
 
@@ -33,9 +33,9 @@ class ResPartner(models.Model):
             candidate_id = self.env['visa.candidate'].search([('client_id', '=', line.id)])
             line.candidates_count = len(candidate_id)
 
-    def _compute_service_req_count(self):
+    def _compute_employment_visa_count(self):
         for line in self:
-            service_rq_id = self.env['service.request'].search([('client_id', '=', line.id)])
-            line.service_req_count = len(service_rq_id)
+            emp_visa_id = self.env['employment.visa'].search([('client_id', '=', line.id)])
+            line.employment_visa_count = len(emp_visa_id)
 
     

@@ -12,13 +12,13 @@
     </record>
 
      <!-- below record is used to fetch total service request count in contact  screen -->
-    <record  model="ir.actions.act_window" id="service_req_form_action_view_active_by_client">
-        <field name="name">Service Request</field>
-        <field name="res_model">service.request</field>
+    <record  model="ir.actions.act_window" id="employment_visa_form_action_view_active_by_client">
+        <field name="name">Employment Visa</field>
+        <field name="res_model">employment.visa</field>
         <field name="view_mode">tree,form</field>
         <field name="view_ids" eval="[(5, 0, 0),
-                      (0, 0, {'view_mode': 'tree', 'view_id': ref('visa_process.service_request_tree')}),
-                      (0, 0, {'view_mode': 'form', 'view_id': ref('visa_process.service_request_form')})]"/>
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('visa_process.employment_visa_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('visa_process.employment_visa_form')})]"/>
         <field name="domain">[('client_id', '=', active_id)]</field>
     </record>
 

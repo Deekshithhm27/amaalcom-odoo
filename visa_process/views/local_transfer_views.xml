@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="local_transfer_form" model="ir.ui.view">
+        <field name="name">Local Transfer</field>
+        <field name="model">local.transfer</field>
+        <field name="arch" type="xml">
+            <form string="Local Transfer">
+                <header>
+                    <field name="state" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}" statusbar_colors='{"approved":"blue","draft":"grey","waiting":"yellow","rejected":"red"}'/>
+                    <button name="action_submit" string="Submit" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_approve" string="Approve" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'waiting')]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_reject" string="Reject" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'waiting')]}" groups="visa_process.group_service_request_manager"/>
+                    <button name="action_cancel" string="Cancel" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'in',('draft','cancel','waiting'))]}"/>
+                </header>
+                <sheet>
+                    <separator string="Local Transfer Information" groups="hr.group_hr_user"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="service_request_type_id"/>
+                            <field name="candidate_id"/>
+                            <field name="nationality_id"/>
+                            <field name="marital"/>
+                        </group>
+                        <group>
+                            <field name="dob"/>
+                            <field name="email"/>
+                            <field name="contact_no"/>
+                            <field name="client_id" readonly="1"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="approver_id" attrs="{'invisible': [('approver_id', '=',False)],'readonly':[('approver_id','!=',False)]}"/>
+                        </group>
+                        <group string="Bank Details">
+                            <field name="bank_id"/>
+                            <field name="bic"/>
+                        </group>
+
+                    </group>
+                    <notebook>
+                        <page string="Work Informations">
+                            <group name="employment_details" string="Employment Details">
+                                <group>
+                                    <field name="profession_en"/>
+                                    <field name="profession_arabic"/>
+                                    <field name="qualification"/>
+                                </group>
+                                <group>
+                                    <field name="employment_duration"/>
+                                    <field name="doj"/>
+                                    <field name="work_location_id"/>
+                                </group>
+                                <group string="Iqama Details">
+                                    <field name="iqama"/>
+                                    <field name="expiry_date"/>
+                                </group>
+                            </group>
+                            <group string="Work Durations">
+                                <group>
+                                    <field name="working_days"/>
+                                    <field name="annual_vacation"/>
+                                </group>
+                                <group>
+                                    <field name="working_hours"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Visa Informations">
+                            <group string="Medical Insurance">
+                                <group>
+                                    <field name="medical_insurance_for"/>
+                                    <field name="visa_cost"/>
+                                </group>
+                            </group>
+                            <group string="Air Fare Details">
+                                <group>
+                                    <field name="air_fare_for"/>
+                                    <field name="air_fare_cost"/>
+                                    <field name="air_fare_frequency"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page name="salary" string="Salary Structure">
+                            <field name="salary_line_ids">
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="name"/>
+                                            <field name="amount"/>
+                                        </group>
+                                    </group>
+                                </form>
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="amount"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="documents" string="Documents Required">
+                            <group>
+                                <group>
+                                    <field name="passport_size_photo"/>
+                                    <field name="dependents_if_any"/>
+                                </group>
+                                <group>
+                                    <field name="signed_offer_letter"/>
+                                    <!-- <field name="attested_visa_page"/> -->
+                                </group>
+                            </group>
+                    
+                        </page>
+                        
+                       
+                    </notebook>
+                    <field name="notes" placeholder="Notes.."/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="local_transfer_tree" model="ir.ui.view">
+        <field name="name">Local Transfer</field>
+        <field name="model">local.transfer</field>
+        <field name="arch" type="xml">
+            <tree string="Local Transfer" decoration-danger="state == 'reject'" decoration-muted="state == 'cancel'" decoration-success="state == 'approved'" decoration-primary="state == 'waiting'">
+                <field name="service_request_type_id"/>
+                <field name="name"/>
+                <field name="candidate_id"/>
+                <field name="client_id"/>
+                <field name="doj"/>
+                <field name="employment_duration"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="local_transfer_filter" model="ir.ui.view">
+        <field name="name">local.transfer.tree</field>
+        <field name="model">local.transfer</field>
+        <field name="arch" type="xml">
+            <search string="Filter">
+                <field name="service_request_type_id" string="Service Request Type"/>
+                <field name="candidate_id" string="Candidate"/>
+                <field name="client_id" string="Client"/>
+                <group expand="0" string="Group By...">
+                    <filter name="group_candidate" string="Candidate" context="{'group_by':'candidate_id'}"/>
+                    <filter name="group_client_id" string="Client" context="{'group_by':'client_id'}"/>
+                    <filter name="group_service_request_type_id" string="Request Type" context="{'group_by':'service_request_type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="action_local_transfer" model="ir.actions.act_window">
+        <field name="name">Local Transfer</field>
+        <field name="res_model">local.transfer</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

@@ -17,10 +17,10 @@ class VisaCandidate(models.Model):
 
     name = fields.Char(string="Name",tracking=True,copy=False)
     sequence = fields.Char(string="Sequence",help="The Unique Sequence no", readonly=True, default='/')
-    email = fields.Char(string="Email Id",tracking=True)
     surname = fields.Char(string="Surname",tracking=True)
     given_name = fields.Char(string="Given Name",tracking=True)
-    dob = fields.Date(string="DOB",tracking=True)
+    email = fields.Char(string="Email Id",tracking=True,required=True)
+    dob = fields.Date(string="DOB",tracking=True,required=True)
     nationality_id = fields.Many2one('res.country',string="Nationality",tracking=True)
     
     
@@ -41,7 +41,8 @@ class VisaCandidate(models.Model):
     employee_skill_ids = fields.One2many('hr.employee.skill', 'candidate_id', string="Skills")
 
     
-    doj = fields.Date(string="DOJ",tracking=True)
+    doj = fields.Date(string="Projected Date of Joining",tracking=True)
+    employment_duration = fields.Many2one('employment.duration',string="Duration of Employment",tracking=True)
     probation_term = fields.Char(string="Probation Term")
     notice_period = fields.Char(string="Notice Period")
     working_days = fields.Char(string="Working Days")

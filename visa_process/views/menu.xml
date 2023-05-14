@@ -3,7 +3,11 @@
 
     <menuitem id="menu_base_visa_candidate" name="Visa Process" sequence="1">
         <menuitem id="menu_visa_candidate" name="Candidate" sequence="1" action="action_visa_candidate" groups="visa_process.group_service_request_client_spoc"/>
-        <menuitem id="menu_service_request" name="Service Request" sequence="2" action="action_service_request" groups="visa_process.group_service_request_client_spoc,visa_process.group_service_request_manager"/>
+        <!-- <menuitem id="menu_service_request" name="Service Request" sequence="2" action="action_service_request" groups="visa_process.group_service_request_client_spoc,visa_process.group_service_request_manager"/> -->
+        <menuitem id="menu_base_services" name="Services" sequence="3">
+            <menuitem id="menu_local_transfer" name="Local Transfer" sequence="1" action="action_local_transfer"/>
+            <menuitem id="menu_employment_visa" name="Employment Visa" sequence="2" action="action_employment_visa"/>
+        </menuitem>
         <!-- <menuitem id="menu_service_request_approval" name="New Service Request" sequence="2" action="action_service_request_approval" groups="visa_process.group_service_request_manager"/> -->
         <menuitem id="menu_base_visa_configuration" name=" Configuration" sequence="10" groups="visa_process.group_service_request_manager">
 			<menuitem id="menu_visa_candidate_documents" name="Documents" sequence="1" action="action_visa_candidate_documents"/>

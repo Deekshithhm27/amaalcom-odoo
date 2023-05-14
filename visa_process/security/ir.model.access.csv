@@ -9,3 +9,6 @@ access_service_request_user,access_service_request_user,model_service_request,ba
 
 access_salary_line_user,access_salary_line_user,model_salary_line,base.group_user,1,1,1,1
 access_candidate_documents_line_user,access_candidate_documents_line_user,model_candidate_documents_line,base.group_user,1,1,1,1
+
+access_local_transfer_user,access_local_transfer_user,model_local_transfer,base.group_user,1,1,1,1
+access_employment_visa_user,access_employment_visa_user,model_employment_visa,base.group_user,1,1,1,1
