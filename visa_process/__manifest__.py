@@ -31,6 +31,7 @@
         'views/service_request_views.xml',
         'views/local_transfer_views.xml',
         'views/employment_visa_views.xml',
+        'views/service_enquiry_views.xml',
         'views/smart_buttons_views.xml',
         'views/res_partner_views.xml',
         'views/res_bank_views.xml',

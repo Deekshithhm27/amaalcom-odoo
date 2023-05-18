@@ -18,6 +18,47 @@
         <field name="domain_force">[('approver_id.user_id.id', '=', user.id),('state','in',('waiting','approved','reject'))]</field>
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
     </record>
+
+    <!-- Employment Visa Rules -->
+    <record id="ir_rule_employment_visa" model="ir.rule">
+        <field name="name">Employment Visa Service Request - Client</field>
+        <field name="model_id" ref="model_employment_visa"/>
+        <field name="domain_force">[('client_id.id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+    <record id="ir_rule_employment_visa_spoc_approval" model="ir.rule">
+        <field name="name">Employment Visa Service Request Amalcom Spoc</field>
+        <field name="model_id" ref="model_employment_visa"/>
+        <field name="domain_force">[('approver_id.user_id.id', '=', user.id),('state','in',('waiting','approved','reject'))]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Local Transfer Rules -->
+    <record id="ir_rule_local_transfer" model="ir.rule">
+        <field name="name">Local Transfer Service Request - Client</field>
+        <field name="model_id" ref="model_local_transfer"/>
+        <field name="domain_force">[('client_id.id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+    <record id="ir_rule_local_transfer_spoc_approval" model="ir.rule">
+        <field name="name">Local Transfer Service Request Amalcom Spoc</field>
+        <field name="model_id" ref="model_local_transfer"/>
+        <field name="domain_force">[('approver_id.user_id.id', '=', user.id),('state','in',('waiting','approved','reject'))]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+    <!-- rule for service enquiry -->
+    <record id="ir_rule_service_enquiry" model="ir.rule">
+        <field name="name">Service enquiry - Client</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">[('client_id.id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+    <record id="ir_rule_service_enquiry_spoc_approval" model="ir.rule">
+        <field name="name">Service enquiry - Amalcom Spoc</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">[('approver_id.user_id.id', '=', user.id),('state','in',('waiting','approved','reject'))]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
  <!--    <record id="ir_rule_service_request_approval" model="ir.rule">
         <field name="name">Service request view by respective Spoc</field>
         <field name="model_id" ref="model_service_request_approval"/>

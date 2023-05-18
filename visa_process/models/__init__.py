@@ -14,6 +14,7 @@ from . import salary_line
 from . import service_request
 from . import local_transfer
 from . import employment_visa
+from . import service_enquiry
 # from . import service_request_approval
 from . import candidate_documents_line
 
