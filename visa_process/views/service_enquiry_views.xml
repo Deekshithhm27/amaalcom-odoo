@@ -24,8 +24,7 @@
                         <group>
                            <field name="company_id" invisible="1"/>
                            <field name="service_request" widget="radio"/>
-                           <field name="ev_service_request_type_id" attrs="{'invisible': [('service_request', '!=', 'ev_request')]}"/>
-                           <field name="lt_service_request_type_id" attrs="{'invisible': [('service_request', '!=', 'lt_request')]}"/>
+                           <field name="candidate_id"/>
                         </group>
                         <group>
                         	<field name="client_id" invisible="1"/>

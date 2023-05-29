@@ -22,24 +22,15 @@ class ServiceEnquiry(models.Model):
         ('waiting','Waiting for Response'),
         ('done', 'Done'),('refuse','Refuse'),('cancel','Cancel')], string='State',default="draft",copy=False,tracking=True)
     service_request = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request",default='lt_request')
-    ev_service_request_type_id = fields.Many2one('ev.service.request.type',string="Service Request Type")
-    lt_service_request_type_id = fields.Many2one('lt.service.request.type',string="Service Request Type")
+    
+    candidate_id = fields.Many2one('visa.candidate',string="Candidate")
 
     client_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id)
     approver_id = fields.Many2one('hr.employee',string="Approver")
 
     request_note = fields.Text(string="Request Query")    
 
-    @api.onchange('service_request')
-    def update_service_request(self):
-        for line in self:
-            if line.service_request == 'en_request':
-                print("---en")
-                line.lt_service_request_type_id = False
-            if line.service_request == 'lt_request':
-                print("--lt")
-                line.ev_service_request_type_id = False
-
+    
     def action_submit(self):
         for line in self:
             line.state = 'waiting'
