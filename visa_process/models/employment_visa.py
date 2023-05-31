@@ -17,7 +17,7 @@ class EmploymentVisa(models.Model):
 
     
     name = fields.Char(string="Sequence",help="The Unique Sequence no", readonly=True, default='/')
-    candidate_id = fields.Many2one('visa.candidate',string="Candidate",tracking=True,required=True)
+    candidate_id = fields.Many2one('visa.candidate',string="Candidate name(as per passport)",tracking=True,required=True)
     dob = fields.Date(string="DOB",tracking=True)
     contact_no = fields.Char(string="Contact # in the country",tracking=True)
     current_contact = fields.Char(string="Current Contact # (if Outside the country) *",tracking=True)
