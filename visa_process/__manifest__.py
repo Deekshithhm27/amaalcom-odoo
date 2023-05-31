@@ -35,6 +35,7 @@
         'views/smart_buttons_views.xml',
         'views/res_partner_views.xml',
         'views/res_bank_views.xml',
+        'views/res_partner_phonecode_views.xml',
         'views/menu.xml',
 
         # 'report/visit_visa.xml',

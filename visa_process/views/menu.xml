@@ -20,6 +20,7 @@
             </menuitem>
 			<menuitem id="menu_salary_structure" name="Salary Structure" sequence="4" action="action_salary_structure"/>
 	        <menuitem id="menu_employment_duration" name="Employment Duration" sequence="2" action="action_employment_duration"/>
+            <menuitem id="menu_partner_phonecode" name="Phone Codes" sequence="4" action="action_partner_phonecodes"/>
 
     	</menuitem>
     </menuitem>

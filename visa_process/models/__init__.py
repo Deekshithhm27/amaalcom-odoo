@@ -17,4 +17,6 @@ from . import employment_visa
 from . import service_enquiry
 # from . import service_request_approval
 from . import candidate_documents_line
+from . import dependent_documents
+from . import res_partner_phonecode
 

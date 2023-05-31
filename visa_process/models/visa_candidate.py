@@ -15,7 +15,7 @@ class VisaCandidate(models.Model):
     _rec_name = 'name'
     _description = "Visa Candidate data"
 
-    name = fields.Char(string="Name",tracking=True,copy=False)
+    name = fields.Char(string="Name as per Passport",tracking=True,copy=False)
     sequence = fields.Char(string="Sequence",help="The Unique Sequence no", readonly=True, default='/')
     surname = fields.Char(string="Surname",tracking=True)
     given_name = fields.Char(string="Given Name",tracking=True)
@@ -33,12 +33,17 @@ class VisaCandidate(models.Model):
         ('widower', 'Widower'),
         ('divorced', 'Divorced')
     ], string='Marital Status', groups="hr.group_hr_user", default='single', tracking=True)
+    religion = fields.Selection([('muslim','Muslim'),('non_muslim','Non-Muslim'),('others','Others')],string="Religion")
     work_location_id = fields.Many2one('hr.work.location',string="Work Location")
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
     client_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id)
 
     resume_line_ids = fields.One2many('hr.resume.line', 'candidate_id', string="Resumé lines")
     employee_skill_ids = fields.One2many('hr.employee.skill', 'candidate_id', string="Skills")
+
+    iqama_certificate = fields.Binary(string="Iqama")
+    degree_certificate = fields.Binary(string="Degree")
+
 
     
     doj = fields.Date(string="Projected Date of Joining",tracking=True)
@@ -47,6 +52,8 @@ class VisaCandidate(models.Model):
     notice_period = fields.Char(string="Notice Period")
     working_days = fields.Char(string="Working Days")
     weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)")
+
+    iqama = fields.Char(string="Designation on Iqama")
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -77,14 +84,21 @@ class VisaCandidate(models.Model):
     #         #     client_seq.write({'next_code': client_seq.client_code + 1})
     #     return res
 
+    # @api.model_create_multi
+    # def create(self,vals_list):
+    #     for vals in vals_list:
+    #         candidate_code = self.env['ir.sequence'].next_by_code('visa.candidate')
+    #         client_id = self.env['res.partner'].search([('id','=',self.env.user.partner_id.id)])
+    #         candidate_code = candidate_code.replace("CLIENT_SEQUENCE", client_id.client_code + '-')
+    #         vals["sequence"] = candidate_code
+    #     res = super().create(vals_list)
+    #     return res
+
     @api.model_create_multi
     def create(self,vals_list):
         for vals in vals_list:
-            candidate_code = self.env['ir.sequence'].next_by_code('visa.candidate')
-            client_id = self.env['res.partner'].search([('id','=',self.env.user.partner_id.id)])
-            candidate_code = candidate_code.replace("CLIENT_SEQUENCE", client_id.client_code + '-')
-            vals["sequence"] = candidate_code
-        res = super().create(vals_list)
+            vals['sequence'] = self.env['ir.sequence'].next_by_code('visa.candidate')
+        res = super(VisaCandidate,self).create(vals_list)
         return res
 
 

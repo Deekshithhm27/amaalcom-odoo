@@ -19,28 +19,39 @@ class LocalTransfer(models.Model):
     name = fields.Char(string="Sequence",help="The Unique Sequence no", readonly=True, default='/')
 
 
-    candidate_id = fields.Many2one('visa.candidate',string="Candidate",tracking=True,required=True)
-    dob = fields.Date(string="DOB",related="candidate_id.dob")
+    candidate_id = fields.Many2one('visa.candidate',string="Candidate name (as per Passport)",tracking=True,required=True)
+    dob = fields.Date(string="DOB *",tracking=True)
     contact_no = fields.Char(string="Cell No. (Absher)")
-    email = fields.Char(string="Email Id",tracking=True,related="candidate_id.email")
-    nationality_id = fields.Many2one('res.country',string="Nationality",tracking=True,related="candidate_id.nationality_id")
+    email = fields.Char(string="Email Id *",tracking=True)
+    nationality_id = fields.Many2one('res.country',string="Nationality",tracking=True)
+    phone_code_id = fields.Char(string="Phone code",compute="fetch_phone_code")
+
+    @api.depends('nationality_id')
+    def fetch_phone_code(self):
+        for line in self:
+            phone_id = self.env['res.partner.phonecode'].search([('country_id','=',line.nationality_id.id)])
+            if phone_id:
+                for lines in phone_id:
+                    line.phone_code_id = lines.name
+            else:
+                line.phone_code_id = False
     marital = fields.Selection([
         ('single', 'Single'),
         ('married', 'Married'),
         ('cohabitant', 'Legal Cohabitant'),
         ('widower', 'Widower'),
         ('divorced', 'Divorced')
-    ], string='Marital Status', groups="hr.group_hr_user", default='single', tracking=True,related="candidate_id.marital")
+    ], string='Marital Status', groups="hr.group_hr_user", default='single', tracking=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('waiting', 'Waiting for Approval'),('approved','Approved'),('reject','Rejected'),('cancel','Cancel')], string='State',default="draft",copy=False,tracking=True)
 
     # Employment details
-    doj = fields.Date(string="Projected Date of Joining",tracking=True,related="candidate_id.doj")
-    employment_duration = fields.Many2one('employment.duration',string="Duration of Employment",tracking=True,related="candidate_id.employment_duration")
-    working_days = fields.Char(string="Working Days")
-    working_hours = fields.Char(string="Working Hours")
-    annual_vacation = fields.Char(string="Annual Vacation")
+    doj = fields.Date(string="Projected Date of Joining",tracking=True)
+    employment_duration = fields.Many2one('employment.duration',string="Duration of Employment *",tracking=True)
+    working_days = fields.Char(string="Working Days *")
+    working_hours = fields.Char(string="Working Hours *")
+    annual_vacation = fields.Char(string="Annual Vacation *")
 
     client_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id)
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
@@ -50,36 +61,67 @@ class LocalTransfer(models.Model):
     # document_line_ids = fields.One2many('candidate.documents.line','service_request_id',string="Documents")
     passport_size_photo = fields.Binary(string="Passport Size Photo")
     dependents_if_any = fields.Binary(string="Dependents if any")
-    signed_offer_letter = fields.Binary(string="Signed Offer Letter")
+    signed_offer_letter = fields.Binary(string="Signed Offer Letter *")
+    bank_iban_letter = fields.Binary(string="Bank Iban Letter *")
+    self_iqama = fields.Binary(string="Iqama *")
+    certificate_1 = fields.Binary(string="Certificates *")
+    certificate_2 = fields.Binary(string="Certificates")
     
-    service_request_type_id = fields.Many2one('lt.service.request.type',string="Service Request Type",required=True,tracking=True)
+    service_request_type_id = fields.Many2one('lt.service.request.type',string="Service Request Type")
     salary_line_ids = fields.One2many('salary.line', 'local_transfer_id', string="Salary Structure")
+
+    @api.model
+    def default_get(self,fields):
+        res = super(LocalTransfer,self).default_get(fields)
+        salary_lines = [(5,0,0)]
+        salary_ids = self.env['salary.structure'].search([])
+        for sal in salary_ids:
+            line = (0,0,{
+                'name':sal.id
+                })
+            salary_lines.append(line)
+        res.update({
+            'salary_line_ids':salary_lines
+            })
+        return res
     approver_id = fields.Many2one('hr.employee',string="Approver")
 
     # Profession Details
     profession_en = fields.Char(string="Profession En.")
     profession_arabic = fields.Char(string="Profession Ar.")
-    qualification = fields.Char(string="Education Qualification")
+    qualification = fields.Char(string="Education Qualification *")
 
-    iqama = fields.Char(string="Iqama")
+    iqama = fields.Char(string="Designation on Iqama")
     expiry_date = fields.Date(string="Expiry Date")
     
-    work_location_id = fields.Many2one('hr.work.location',string="Work Location",related="candidate_id.work_location_id")
+    work_location_id = fields.Many2one('hr.work.location',string="Work Location",tracking=True)
 
     # Air Fare
     air_fare_for = fields.Selection([('self','Self'),('family','Family')],string="Air Fare for?")
-    air_fare_cost = fields.Monetary(string="Air Fare Cost",default=0.0, currency_field='currency_id')
     air_fare_frequency = fields.Char(string="Air Fare Frequency")
 
     # Medical Insurance
     medical_insurance_for = fields.Selection([('self','Self'),('family','Family')],string="Medical Insurance For?")
-    visa_cost = fields.Monetary(string="Visa cost for family members(Self or company - Specify)",default=0.0, currency_field='currency_id')
+    insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Class *")
+    dependent_document_ids = fields.One2many('dependent.documents','lt_dependent_document_id',string="Dependent Documents")
 
     # Bank details
-    bank_id = fields.Many2one('res.bank')
-    bic = fields.Char(string="IBAN")
+    bank_id = fields.Many2one('res.bank', string="Bank *",tracking=True)
+    bic = fields.Char(string="IBAN *",tracking=True)
 
     notes = fields.Text(string="Notes")
+
+    @api.onchange('candidate_id')
+    def onchange_candidate_update_data(self):
+        for line in self:
+            if line.candidate_id:
+                line.nationality_id = line.candidate_id.nationality_id
+                line.email = line.candidate_id.email
+                line.marital = line.candidate_id.marital
+                line.employment_duration = line.candidate_id.employment_duration
+                line.doj = line.candidate_id.doj
+                line.work_location_id = line.candidate_id.work_location_id
+                line.dob = line.candidate_id.dob
 
 
     def unlink(self):
@@ -155,12 +197,12 @@ class LocalTransfer(models.Model):
             raise UserError(_("Please add Bank"))
         if not self.bic:
             raise UserError(_("Please add IBAN"))
-
-
-
-
-
-
+        if not self.bank_iban_letter:
+            raise UserError(_("Please attach Bank Iban Letter"))
+        if not self.certificate_1:
+            raise UserError(_("Please attach Certificate"))
+        if not self.insurance_class:
+            raise UserError(_("Please select medical Insurance class"))
 
 
         self._add_followers()

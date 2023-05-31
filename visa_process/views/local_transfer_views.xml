@@ -21,7 +21,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="service_request_type_id"/>
+                            <field name="service_request_type_id" invisible="1"/>
                             <field name="candidate_id"/>
                             <field name="nationality_id"/>
                             <field name="marital"/>
@@ -29,7 +29,13 @@
                         <group>
                             <field name="dob"/>
                             <field name="email"/>
-                            <field name="contact_no"/>
+                            <label for="contact_no"/>
+                            <div>
+                                <field name="phone_code_id" style="width: 30px" edit="False" create="False"/> - 
+
+                                <field name="contact_no"/>
+                            </div>
+                            
                             <field name="client_id" readonly="1"/>
                             <field name="company_id" invisible="1"/>
                             <field name="approver_id" attrs="{'invisible': [('approver_id', '=',False)],'readonly':[('approver_id','!=',False)]}"/>
@@ -68,17 +74,31 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Visa Informations">
+                        <page string="Medical Insurance Details">
                             <group string="Medical Insurance">
                                 <group>
                                     <field name="medical_insurance_for"/>
-                                    <field name="visa_cost"/>
+                                    <field name="insurance_class"/>
+                                </group>
+                                <group>
+                                    <!-- should i make below fields non mandatory in case of insurance for family -->
+                                    <field name="self_iqama" widget="attach"/>
                                 </group>
                             </group>
+                            <group attrs="{'invisible': [('medical_insurance_for', 'in',('self',False))]}" >
+                                <field name="dependent_document_ids">
+                                    <tree editable="bottom">
+                                        <field name="dependent_passport_id" widget="binary"/>
+                                        <field name="dependent_iqama_id" widget="binary"/>
+                                        <field name="dependent_border_id" widget="binary"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
+                        <page string="Visa Informations">
                             <group string="Air Fare Details">
                                 <group>
                                     <field name="air_fare_for"/>
-                                    <field name="air_fare_cost"/>
                                     <field name="air_fare_frequency"/>
                                 </group>
                             </group>
@@ -95,7 +115,7 @@
                                 </form>
                                 <tree editable="bottom">
                                     <field name="name"/>
-                                    <field name="amount"/>
+                                    <field name="amount" sum="Total Amount"/>
                                 </tree>
                             </field>
                         </page>
@@ -107,7 +127,12 @@
                                 </group>
                                 <group>
                                     <field name="signed_offer_letter"/>
+                                    <field name="bank_iban_letter"/>
                                     <!-- <field name="attested_visa_page"/> -->
+                                </group>
+                                <group>
+                                    <field name="certificate_1"/>
+                                    <field name="certificate_2" string=""/>
                                 </group>
                             </group>
                     
@@ -129,7 +154,6 @@
         <field name="model">local.transfer</field>
         <field name="arch" type="xml">
             <tree string="Local Transfer" decoration-danger="state == 'reject'" decoration-muted="state == 'cancel'" decoration-success="state == 'approved'" decoration-primary="state == 'waiting'">
-                <field name="service_request_type_id"/>
                 <field name="name"/>
                 <field name="candidate_id"/>
                 <field name="client_id"/>
@@ -144,13 +168,11 @@
         <field name="model">local.transfer</field>
         <field name="arch" type="xml">
             <search string="Filter">
-                <field name="service_request_type_id" string="Service Request Type"/>
                 <field name="candidate_id" string="Candidate"/>
                 <field name="client_id" string="Client"/>
                 <group expand="0" string="Group By...">
                     <filter name="group_candidate" string="Candidate" context="{'group_by':'candidate_id'}"/>
                     <filter name="group_client_id" string="Client" context="{'group_by':'client_id'}"/>
-                    <filter name="group_service_request_type_id" string="Request Type" context="{'group_by':'service_request_type_id'}"/>
                 </group>
             </search>
         </field>

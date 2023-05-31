@@ -18,32 +18,43 @@ class EmploymentVisa(models.Model):
     
     name = fields.Char(string="Sequence",help="The Unique Sequence no", readonly=True, default='/')
     candidate_id = fields.Many2one('visa.candidate',string="Candidate",tracking=True,required=True)
-    dob = fields.Date(string="DOB",related="candidate_id.dob")
-    contact_no = fields.Char(string="Contact # in the country",related="candidate_id.contact_no")
-    current_contact = fields.Char(string="Current Contact # (if Outside the country)",related="candidate_id.current_contact")
-    email = fields.Char(string="Email Id",tracking=True,related="candidate_id.email")
-    nationality_id = fields.Many2one('res.country',string="Nationality",tracking=True,related="candidate_id.nationality_id")
+    dob = fields.Date(string="DOB",tracking=True)
+    contact_no = fields.Char(string="Contact # in the country",tracking=True)
+    current_contact = fields.Char(string="Current Contact # (if Outside the country) *",tracking=True)
+    email = fields.Char(string="Email Id *",tracking=True)
+    nationality_id = fields.Many2one('res.country',string="Nationality",tracking=True)
+    phone_code_id = fields.Char(string="Phone code",compute="fetch_phone_code")
+
+    @api.depends('nationality_id')
+    def fetch_phone_code(self):
+        for line in self:
+            phone_id = self.env['res.partner.phonecode'].search([('country_id','=',line.nationality_id.id)])
+            if phone_id:
+                for lines in phone_id:
+                    line.phone_code_id = lines.name
+            else:
+                line.phone_code_id = False
     marital = fields.Selection([
         ('single', 'Single'),
         ('married', 'Married'),
         ('cohabitant', 'Legal Cohabitant'),
         ('widower', 'Widower'),
         ('divorced', 'Divorced')
-    ], string='Marital Status', groups="hr.group_hr_user", default='single', tracking=True,related="candidate_id.marital")
+    ], string='Marital Status', groups="hr.group_hr_user", default='single', tracking=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('waiting', 'Waiting for Approval'),('approved','Approved'),('reject','Rejected'),('cancel','Cancel')], string='State',default="draft",copy=False,tracking=True)
 
     # Employment details
     designation = fields.Char(string="Designation on Offer Letter",tracking=True)
-    doj = fields.Date(string="Projected Date of Joining",tracking=True,related="candidate_id.doj")
-    employment_duration = fields.Many2one('employment.duration',string="Duration of Employment",tracking=True,related="candidate_id.employment_duration")
-    probation_term = fields.Char(string="Probation Term",related="candidate_id.probation_term")
-    notice_period = fields.Char(string="Notice Period",related="candidate_id.notice_period")
-    working_days = fields.Char(string="Working Days")
-    working_hours = fields.Char(string="Working Hours")
-    annual_vacation = fields.Char(string="Annual Vacation")
-    weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)",related="candidate_id.weekly_off_days")
+    doj = fields.Date(string="Projected Date of Joining",tracking=True)
+    employment_duration = fields.Many2one('employment.duration',string="Duration of Employment *",tracking=True)
+    probation_term = fields.Char(string="Probation Term",tracking=True)
+    notice_period = fields.Char(string="Notice Period",tracking=True)
+    working_days = fields.Char(string="Working Days *")
+    working_hours = fields.Char(string="Working Hours *")
+    annual_vacation = fields.Char(string="Annual Vacation *")
+    weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)",tracking=True)
 
     client_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id)
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
@@ -51,38 +62,79 @@ class EmploymentVisa(models.Model):
 
     # # Documents
     # document_line_ids = fields.One2many('candidate.documents.line','service_request_id',string="Documents")
-    signed_offer_letter = fields.Binary(string="Signed Offer letter/should be attached")
-    passport_copy = fields.Binary(string="Passport copy")
-    attested_degree = fields.Binary(string="Attested Degree copy")
-    attested_visa_page = fields.Binary(string="Attested visa page")
+    signed_offer_letter = fields.Binary(string="Signed Offer letter/should be attached *")
+    passport_copy = fields.Binary(string="Passport copy *")
+    border_copy = fields.Binary(string="Border Id *")
+    attested_degree = fields.Binary(string="Attested Degree copy *")
+    attested_visa_page = fields.Binary(string="Attested visa page *")
+    bank_iban_letter = fields.Binary(string="Bank Iban Letter *")
+    certificate_1 = fields.Binary(string="Certificates *")
+    certificate_2 = fields.Binary(string="Certificates")
+    other_doc_1 = fields.Binary(string="Others")
+    other_doc_2 = fields.Binary(string="Others")
+    other_doc_3 = fields.Binary(string="Others")
+    other_doc_4 = fields.Binary(string="Others")
+    
 
-    service_request_type_id = fields.Many2one('ev.service.request.type',string="Service Request Type",required=True,tracking=True)
+    service_request_type_id = fields.Many2one('ev.service.request.type',string="Service Request Type")
     salary_line_ids = fields.One2many('salary.line', 'emp_visa_id', string="Salary Structure")
+    @api.model
+    def default_get(self,fields):
+        res = super(EmploymentVisa,self).default_get(fields)
+        salary_lines = [(5,0,0)]
+        salary_ids = self.env['salary.structure'].search([])
+        for sal in salary_ids:
+            line = (0,0,{
+                'name':sal.id
+                })
+            salary_lines.append(line)
+        res.update({
+            'salary_line_ids':salary_lines
+            })
+        return res
     approver_id = fields.Many2one('hr.employee',string="Approver")
 
     # Profession Details
-    visa_profession = fields.Char(string="Visa Profession")
-    visa_religion = fields.Selection([('muslim','Muslim'),('non_muslim','Non-Muslim')],string="Visa Religion")
-    visa_nationality_id = fields.Many2one('res.country',string="Visa Nationality")
-    visa_stamping_city_id = fields.Char(string="Visa Stamping City")
-    visa_enjaz = fields.Char(string="Visa Enjaz Details")
-    no_of_visa = fields.Integer(string="No of Visa")
-    visa_gender = fields.Selection([('male','Male'),('female','Female'),('others','Others')],string="Visa Gender")
-    qualification = fields.Char(string="Education Qualification")
+    visa_profession = fields.Char(string="Visa Profession *")
+    visa_religion = fields.Selection([('muslim','Muslim'),('non_muslim','Non-Muslim'),('others','Others')],string="Visa Religion *")
+    visa_nationality_id = fields.Many2one('res.country',string="Visa Nationality *")
+    visa_stamping_city_id = fields.Char(string="Visa Stamping City *")
+    visa_enjaz = fields.Char(string="Visa Enjaz Details *")
+    no_of_visa = fields.Integer(string="No of Visa *")
+    visa_fees = fields.Selection([('aamalcom','Aamalcom'),('lti','LTI')],string="Visa Fees")
+    visa_gender = fields.Selection([('male','Male'),('female','Female'),('others','Others')],string="Visa Gender *")
+    qualification = fields.Char(string="Education Qualification *")
 
     iqama_designation = fields.Char(string="Designation on Iqama (exact)")
-    attested_from_saudi_cultural = fields.Boolean(string="Attested from saudi cultural")
+    attested_from_saudi_cultural = fields.Selection([('yes','Yes'),('no','No')],string="Degree attested from saudi cultural")
     
-    work_location_id = fields.Many2one('hr.work.location',string="Work Location",related="candidate_id.work_location_id")
+    work_location_id = fields.Many2one('hr.work.location',string="Work Location",tracking=True)
 
     # Air Fare
     air_fare_for = fields.Selection([('self','Self'),('family','Family')],string="Air Fare for?")
-    air_fare_cost = fields.Monetary(string="Air Fare Cost",default=0.0, currency_field='currency_id')
     air_fare_frequency = fields.Char(string="Air Fare Frequency")
 
     # Medical Insurance
     medical_insurance_for = fields.Selection([('self','Self'),('family','Family')],string="Medical Insurance For?")
-    visa_cost = fields.Monetary(string="Visa cost for family members(Self or company - Specify)",default=0.0, currency_field='currency_id')
+    insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Class *")
+    dependent_document_ids = fields.One2many('dependent.documents','ev_dependent_document_id',string="Dependent Documents")
+
+    @api.onchange('candidate_id')
+    def onchange_candidate_update_data(self):
+        for line in self:
+            if line.candidate_id:
+                line.nationality_id = line.candidate_id.nationality_id
+                line.email = line.candidate_id.email
+                line.marital = line.candidate_id.marital
+                line.employment_duration = line.candidate_id.employment_duration
+                line.probation_term = line.candidate_id.probation_term
+                line.notice_period = line.candidate_id.notice_period
+                line.weekly_off_days = line.candidate_id.weekly_off_days
+                line.doj = line.candidate_id.doj
+                line.work_location_id = line.candidate_id.work_location_id
+                line.dob = line.candidate_id.dob
+                line.contact_no = line.candidate_id.contact_no
+                line.current_contact = line.candidate_id.current_contact
 
 
     def unlink(self):
@@ -166,15 +218,22 @@ class EmploymentVisa(models.Model):
             raise UserError(_("Please add Working Hours"))
         if not self.annual_vacation:
             raise UserError(_("Please add Annual Vacation"))
+        if not self.insurance_class:
+            raise UserError(_("Please select medical Insurance class"))
         if not self.signed_offer_letter:
             raise UserError(_("Please attach Signed Offer letter"))
         if not self.passport_copy:
             raise UserError(_("Please attach Passport Copy"))
+        if not self.border_copy:
+            raise UserError(_("Please attach Border Id"))
         if not self.attested_degree:
             raise UserError(_("Please attach Attested Degree Copy"))
         if not self.attested_visa_page:
             raise UserError(_("Please attach Attested Visa page"))
-
+        if not self.bank_iban_letter:
+            raise UserError(_("Please attach Bank Iban Letter"))
+        if not self.certificate_1:
+            raise UserError(_("Please attach Certificate"))
 
 
 
