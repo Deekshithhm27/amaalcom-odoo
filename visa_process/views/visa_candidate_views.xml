@@ -23,8 +23,18 @@
                         </group>
                         <group>
                         	<field name="nationality_id"/>
-							<field name="contact_no"/>
-							<field name="current_contact"/>
+                            <label for="contact_no"/>
+                            <div>
+                                <field name="phone_code_id" style="width: 120px" edit="False" create="False"/>
+
+                                <field name="contact_no" style="width: 150px"/>
+                            </div>
+                            <label for="current_contact"/>
+                            <div>
+                                <field name="current_phone_code_id" style="width: 120px" edit="False" create="False"/>
+
+                                <field name="current_contact" style="width: 150px"/>
+                            </div>
 							<field name="marital"/>
 							<field name="work_location_id"/>
 							<field name="client_id" readonly="1"/>

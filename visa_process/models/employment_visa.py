@@ -23,17 +23,8 @@ class EmploymentVisa(models.Model):
     current_contact = fields.Char(string="Current Contact # (if Outside the country) *",tracking=True)
     email = fields.Char(string="Email Id *",tracking=True)
     nationality_id = fields.Many2one('res.country',string="Nationality",tracking=True)
-    phone_code_id = fields.Char(string="Phone code",compute="fetch_phone_code")
+    phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
 
-    @api.depends('nationality_id')
-    def fetch_phone_code(self):
-        for line in self:
-            phone_id = self.env['res.partner.phonecode'].search([('country_id','=',line.nationality_id.id)])
-            if phone_id:
-                for lines in phone_id:
-                    line.phone_code_id = lines.name
-            else:
-                line.phone_code_id = False
     marital = fields.Selection([
         ('single', 'Single'),
         ('married', 'Married'),

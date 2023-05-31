@@ -10,7 +10,7 @@ from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 class SalaryStructure(models.Model):
     _name = 'salary.structure'
-    _order = 'id desc'
+    _order = 'id asc'
     _inherit = ['mail.thread']
     _rec_name = 'name'
     _description = "Salary Structure"

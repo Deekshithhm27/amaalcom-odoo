@@ -21,20 +21,11 @@ class LocalTransfer(models.Model):
 
     candidate_id = fields.Many2one('visa.candidate',string="Candidate name (as per Passport)",tracking=True,required=True)
     dob = fields.Date(string="DOB *",tracking=True)
-    contact_no = fields.Char(string="Cell No. (Absher)")
+    contact_no = fields.Char(string="Cell No. (Absher) *")
     email = fields.Char(string="Email Id *",tracking=True)
     nationality_id = fields.Many2one('res.country',string="Nationality",tracking=True)
-    phone_code_id = fields.Char(string="Phone code",compute="fetch_phone_code")
+    phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
 
-    @api.depends('nationality_id')
-    def fetch_phone_code(self):
-        for line in self:
-            phone_id = self.env['res.partner.phonecode'].search([('country_id','=',line.nationality_id.id)])
-            if phone_id:
-                for lines in phone_id:
-                    line.phone_code_id = lines.name
-            else:
-                line.phone_code_id = False
     marital = fields.Selection([
         ('single', 'Single'),
         ('married', 'Married'),
@@ -42,6 +33,7 @@ class LocalTransfer(models.Model):
         ('widower', 'Widower'),
         ('divorced', 'Divorced')
     ], string='Marital Status', groups="hr.group_hr_user", default='single', tracking=True)
+    iqama_no = fields.Char(string="Iqama No *")
     state = fields.Selection([
         ('draft', 'Draft'),
         ('waiting', 'Waiting for Approval'),('approved','Approved'),('reject','Rejected'),('cancel','Cancel')], string='State',default="draft",copy=False,tracking=True)
@@ -66,6 +58,10 @@ class LocalTransfer(models.Model):
     self_iqama = fields.Binary(string="Iqama *")
     certificate_1 = fields.Binary(string="Certificates *")
     certificate_2 = fields.Binary(string="Certificates")
+    other_doc_1 = fields.Binary(string="Others")
+    other_doc_2 = fields.Binary(string="Others")
+    other_doc_3 = fields.Binary(string="Others")
+    other_doc_4 = fields.Binary(string="Others")
     
     service_request_type_id = fields.Many2one('lt.service.request.type',string="Service Request Type")
     salary_line_ids = fields.One2many('salary.line', 'local_transfer_id', string="Salary Structure")
@@ -91,7 +87,7 @@ class LocalTransfer(models.Model):
     profession_arabic = fields.Char(string="Profession Ar.")
     qualification = fields.Char(string="Education Qualification *")
 
-    iqama = fields.Char(string="Designation on Iqama")
+    iqama = fields.Char(string="Designation on Iqama *")
     expiry_date = fields.Date(string="Expiry Date")
     
     work_location_id = fields.Many2one('hr.work.location',string="Work Location",tracking=True)
@@ -203,6 +199,12 @@ class LocalTransfer(models.Model):
             raise UserError(_("Please attach Certificate"))
         if not self.insurance_class:
             raise UserError(_("Please select medical Insurance class"))
+        if not self.contact_no:
+            raise UserError(_("Please Add Cell No. (Absher)"))
+        if not self.iqama:
+            raise UserError(_("Please Add Designation on Iqama"))
+        if not self.iqama_no:
+            raise UserError(_("Please Provide Iqama No"))
 
 
         self._add_followers()

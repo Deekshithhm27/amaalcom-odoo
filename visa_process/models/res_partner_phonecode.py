@@ -17,3 +17,14 @@ class ResPartnerPhonecode(models.Model):
 
     name = fields.Char(string="Code")
     country_id = fields.Many2one('res.country',string='Country')
+
+    def name_get(self):
+        """ Display 'Warehouse_name: PickingType_name' """
+        res = []
+        for line in self:
+            if line.country_id:
+                name = line.name + ' (' + line.country_id.name + ')'
+            else:
+                name = line.name
+            res.append((line.id, name))
+        return res

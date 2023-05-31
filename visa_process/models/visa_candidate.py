@@ -53,6 +53,9 @@ class VisaCandidate(models.Model):
     working_days = fields.Char(string="Working Days")
     weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)")
 
+    phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
+    current_phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
+
     iqama = fields.Char(string="Designation on Iqama")
 
     @api.model_create_multi

@@ -32,7 +32,7 @@
                         	<field name="contact_no"/>
                             <label for="current_contact"/>
                             <div>
-                                <field name="phone_code_id" style="width: 30px" edit="False" create="False"/> - 
+                                <field name="phone_code_id" style="width: 120px" edit="False" create="False"/>
 
                             	<field name="current_contact" style="width: 150px"/>
                             </div>
@@ -61,6 +61,10 @@
                                 	<field name="iqama_designation"/>
                                 	<field name="attested_from_saudi_cultural"/>
                                 </group>
+                                <group string="Air Fare Details">
+                                    <field name="air_fare_for"/>
+                                    <field name="air_fare_frequency"/>
+                                </group>
                             </group>
                             <group string="Work Durations">
                             	<group>
@@ -86,11 +90,6 @@
 		                        	<field name="no_of_visa"/>
                                     <field name="visa_fees"/>
 		                        </group>
-		                        
-                                <group string="Air Fare Details">
-                                    <field name="air_fare_for"/>
-                                    <field name="air_fare_frequency"/>
-                                </group>
 	                    	</group>
 	                    	
                 		</page>
