@@ -24,6 +24,7 @@ class EmploymentVisa(models.Model):
     email = fields.Char(string="Email Id *",tracking=True)
     nationality_id = fields.Many2one('res.country',string="Nationality",tracking=True)
     phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
+    current_phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
 
     marital = fields.Selection([
         ('single', 'Single'),
