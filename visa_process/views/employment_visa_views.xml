@@ -49,7 +49,17 @@
                     </group>
                     <notebook>
                 		<page string="Work Informations">
-                			<group name="employment_details" string="Employment Details">
+                			<group>
+                                <group string="If Inside Country">
+                                    <field name="iqama_designation"/>
+                                    <field name="attested_from_saudi_cultural"/>
+                                </group>
+                                <group string="Air Fare Details">
+                                    <field name="air_fare_for"/>
+                                    <field name="air_fare_frequency"/>
+                                </group>
+                            </group>
+                            <group name="employment_details" string="Employment Details">
                                 <group>
                                 	<field name="qualification"/>
                                 	<field name="designation"/>
@@ -62,14 +72,8 @@
                                     <field name="notice_period"/>
                                     <field name="doj"/>
                                 </group>
-                                <group string="If Inside Country">
-                                	<field name="iqama_designation"/>
-                                	<field name="attested_from_saudi_cultural"/>
-                                </group>
-                                <group string="Air Fare Details">
-                                    <field name="air_fare_for"/>
-                                    <field name="air_fare_frequency"/>
-                                </group>
+                                
+                                
                             </group>
                             <group string="Work Durations">
                             	<group>
