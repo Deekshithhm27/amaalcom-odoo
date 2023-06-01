@@ -137,7 +137,7 @@ class EmploymentVisa(models.Model):
         for objects in self:
             if objects.state in ['waiting', 'approved', 'rejected']:
                 raise UserError(_('You cannot remove the record which is in %s state!') % objects.state)
-        return super(LocalTransfer, self).unlink()
+        return super(EmploymentVisa, self).unlink()
 
     
 
