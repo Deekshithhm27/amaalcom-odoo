@@ -51,7 +51,7 @@
                         <field name="company_id" invisible="1"/>
                         <field name="client_id" invisible="1"/>
                         <field name="approver_id" invisible="1"/>
-                        <field name="doc_uploaded"/>
+                        <field name="doc_uploaded" invisible="1"/>
                         <h1>
                            <field name="name" readonly="1"/>
                             
