@@ -118,6 +118,9 @@
                                     </tree>
                                 </field>
                             </group>
+                            <group>
+                                <field name="medical_doc"/>
+                            </group>
                         </page>
                 		<page name="salary" string="Salary Structure">
                             <field name="salary_line_ids">

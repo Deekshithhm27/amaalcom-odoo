@@ -10,6 +10,8 @@ access_service_request_user,access_service_request_user,model_service_request,ba
 access_dependent_documents_user,access_dependent_documents_user,model_dependent_documents,base.group_user,1,1,1,1
 
 access_res_partner_phonecode_user,access_res_partner_phonecode_user,model_res_partner_phonecode,base.group_user,1,1,1,1
+access_visa_ref_documents_user,access_visa_ref_documents_user,model_visa_ref_documents,base.group_user,1,1,1,1
+access_letter_print_type_user,access_letter_print_type_user,model_letter_print_type,base.group_user,1,1,1,1
 
 
 

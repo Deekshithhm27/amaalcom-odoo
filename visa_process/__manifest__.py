@@ -13,7 +13,7 @@
     'category': 'Generic Modules/Human Resources',
     'version': '1.0',
     'license': 'OPL-1',
-    'depends': ['base','mail','hr','product','contacts','hr_skills'],
+    'depends': ['base','mail','hr','product','contacts','hr_skills','web'],
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
@@ -36,7 +36,10 @@
         'views/res_partner_views.xml',
         'views/res_bank_views.xml',
         'views/res_partner_phonecode_views.xml',
+        'views/visa_ref_documents_views.xml',
+        'views/letter_print_type_views.xml',
         'views/menu.xml',
+        # 'views/assets.xml'
 
         # 'report/visit_visa.xml',
         # 'report/embassy_visit_visa.xml',

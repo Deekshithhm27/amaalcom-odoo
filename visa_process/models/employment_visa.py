@@ -110,6 +110,14 @@ class EmploymentVisa(models.Model):
     medical_insurance_for = fields.Selection([('self','Self'),('family','Family')],string="Medical Insurance For?")
     insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Class *")
     dependent_document_ids = fields.One2many('dependent.documents','ev_dependent_document_id',string="Dependent Documents")
+    medical_doc = fields.Binary(string="Medical Doc")
+
+    @api.onchange('medical_insurance_for')
+    def fetch_medical_doc(self):
+        doc_ids = self.env['visa.ref.documents'].search([('is_medical_doc','=',True)])
+        if doc_ids:
+            for line in doc_ids:
+                self.medical_doc = line.medical_doc
 
     @api.onchange('candidate_id')
     def onchange_candidate_update_data(self):

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See COPYRIGHT & LICENSE files for full copyright and licensing details.
+from . import letter_print_type
 from . import res_partner
 from . import hr_resume
 from . import hr_skill
@@ -19,4 +20,5 @@ from . import service_enquiry
 from . import candidate_documents_line
 from . import dependent_documents
 from . import res_partner_phonecode
+from . import visa_ref_documents
 

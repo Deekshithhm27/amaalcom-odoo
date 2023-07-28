@@ -15,6 +15,7 @@ class SalaryLines(models.Model):
     _rec_name = 'name'
 
     emp_visa_id = fields.Many2one('employment.visa',string="Employment Visa Id")
+    ev_enq_visa_id = fields.Many2one('service.enquiry',string="EV Service Enquiry")
     service_req_id = fields.Many2one('service.request',string="Service req Id")
     local_transfer_id = fields.Many2one('local.transfer',string="Local Transfer Id")
     service_req_approval_id = fields.Many2one('service.request.approval',string="Service request Approval Id")

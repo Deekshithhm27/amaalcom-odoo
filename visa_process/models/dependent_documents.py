@@ -14,6 +14,8 @@ class DependentDocuments(models.Model):
 
     ev_dependent_document_id = fields.Many2one('employment.visa',string="Employment Visa Id")
     lt_dependent_document_id = fields.Many2one('local.transfer',string="Local Transfer Id")
+
+    ev_enq_dependent_document_id = fields.Many2one('service.enquiry',string="EV Enq Id")
     
     dependent_passport_id = fields.Binary(string="Dependent Passport")
     dependent_iqama_id = fields.Binary(string="Dependent Iqama")

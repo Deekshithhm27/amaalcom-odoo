@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+	<menuitem id="account.product_product_menu_sellable" name="Products" action="account.product_product_action_sellable" parent="account.menu_finance_receivables" groups="base.group_no_one"/>
+	<menuitem id="account.product_product_menu_purchasable" parent="account.menu_finance_payables" action="account.product_product_action_purchasable" name="Products" groups="base.group_no_one"/>
+</odoo>

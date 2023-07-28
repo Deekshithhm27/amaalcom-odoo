@@ -11,7 +11,7 @@ from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 class EmploymentDuration(models.Model):
 
     _name = 'employment.duration'
-    _order = 'id desc'
+    _order = 'name asc'
     _inherit = ['mail.thread']
     _rec_name = 'name'
     _description = "Employment Duration"
