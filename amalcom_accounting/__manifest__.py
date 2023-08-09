@@ -14,7 +14,6 @@
     'license': 'OPL-1',
     'depends': ['base','account','om_account_followup','om_recurring_payments','payment','om_account_budget'],
     'data': [
-    	'security/security.xml',
         'views/account_move_views.xml',
         'views/menu_hide_views.xml'
         
