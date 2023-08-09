@@ -37,11 +37,11 @@
             <field name="target">new</field>
         </record>
 
-        <!-- <menuitem id="menu_finance_followup" parent="account.menu_finance"
+        <menuitem id="menu_finance_followup" parent="account.menu_finance"
                   name="Follow-Ups"
-                  groups="account.group_account_invoice"/> -->
+                  groups="account.group_account_invoice"/>
 
-        <menuitem id="menu_finance_followup" name="Follow-Ups"/>
+        <!-- <menuitem id="menu_finance_followup" name="Follow-Ups"/> -->
 
         <menuitem action="action_om_account_followup_print"
                   id="om_account_followup_print_menu"

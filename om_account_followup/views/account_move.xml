@@ -32,11 +32,9 @@
         </record>
 
 
-        <!-- <menuitem id="om_account_followup_main_menu"
+        <menuitem id="om_account_followup_main_menu"
                   parent="account.menu_finance_configuration"
-                  name="Follow-up"/> -->
-
-        <menuitem id="om_account_followup_main_menu" name="Follow-up"/>
+                  name="Follow-up"/>
 
         <menuitem id="om_account_followup_menu"
                   name="Follow-up Levels"

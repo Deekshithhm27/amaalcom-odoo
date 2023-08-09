@@ -1,6 +1,40 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+	<record id="account.product_product_menu_sellable" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="account.product_product_menu_purchasable" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="om_account_followup.menu_finance_followup" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="account.account_reports_management_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="om_recurring_payments.menu_recurring_payments" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="om_recurring_payments.menu_recurring_payment" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="payment.payment_acquirer_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="payment.payment_icon_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="payment.payment_token_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="payment.payment_transaction_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="om_account_followup.om_account_followup_main_menu" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="om_account_budget.menu_budget_post_form" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
 
-	<menuitem id="account.product_product_menu_sellable" name="Products" action="account.product_product_action_sellable" parent="account.menu_finance_receivables" groups="base.group_no_one"/>
-	<menuitem id="account.product_product_menu_purchasable" parent="account.menu_finance_payables" action="account.product_product_action_purchasable" name="Products" groups="base.group_no_one"/>
 </odoo>
