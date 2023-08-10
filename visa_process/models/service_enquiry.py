@@ -111,7 +111,7 @@ class ServiceEnquiry(models.Model):
     upload_family_visit_visa_doc = fields.Binary(string="Family Visit Visa Doc")
     upload_employment_contract_doc = fields.Binary(string="Employment Contract")
     upload_cultural_letter_doc = fields.Binary(string="Cultural Letter")
-    draft_istiqdam = fields.Binary(string="Draft Istiqdam")
+    draft_istiqdam = fields.Binary(string="Draft Istiqdam",compute="auto_fill_istiqdam_form",store=True)
     updated_istiqdam_form_doc = fields.Binary(string="Updated Istiqdam Form")
     upload_istiqdam_form_doc = fields.Binary(string="Upload Istiqdam Form")
     upload_confirmation_of_exit_reentry = fields.Binary(string="Upload Confirmation of Exit re-entry")
@@ -339,6 +339,15 @@ class ServiceEnquiry(models.Model):
                     line.lt_service_request_type = False
                 if line.service_request == 'lt_request':
                     line.ev_service_request_type = False
+
+    @api.depends('lt_service_request_type','ev_service_request_type')
+    def auto_fill_istiqdam_form(self):
+        for line in self:
+            if line.lt_service_request_type == 'istiqdam_form' or line.ev_service_request_type == 'istiqdam_form':
+                istiqdam_id = self.env['visa.ref.documents'].search([('is_istiqdam_doc','=',True)],limit=1)
+                line.draft_istiqdam = istiqdam_id.istiqdam_doc
+            else:
+                line.draft_istiqdam = False
 
     def action_confirm(self):
         for line in self:

@@ -19,3 +19,7 @@ class VisaRefDocument(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
     is_medical_doc = fields.Boolean(string="Is Medical Doc")
     medical_doc = fields.Binary(string="File")
+
+    is_istiqdam_doc = fields.Boolean(string="Is Istiqdam Doc")
+    istiqdam_doc = fields.Binary(string="File")
+

@@ -321,7 +321,7 @@
                     <!-- Istiqdam Form start-->
                     <group name="lt_istiqdam_form" attrs="{'invisible': ['&amp;',('lt_service_request_type', '!=', 'istiqdam_form'),('ev_service_request_type', '!=', 'istiqdam_form')]}">
                         <group>
-                            <field name="draft_istiqdam" readonly="1"/>
+                            <field name="draft_istiqdam" attrs="{'readonly': [('draft_istiqdam', '!=',False)]}"/>
                             
                         </group>
                         <group>

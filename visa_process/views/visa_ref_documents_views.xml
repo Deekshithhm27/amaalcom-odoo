@@ -16,6 +16,10 @@
                         	<field name="is_medical_doc"/>
                         	<field name="medical_doc" attrs="{'invisible': [('is_medical_doc', '=', False)]}" widget="document_preview"/>
                         </group>
+                        <group>
+                            <field name="is_istiqdam_doc"/>
+                            <field name="istiqdam_doc" attrs="{'invisible': [('is_istiqdam_doc', '=', False)]}" widget="document_preview"/>
+                        </group>
                     </group>
                     
                 </sheet>
@@ -33,6 +37,7 @@
             <tree string="Documents">
                 <field name="name"/>
                 <field name="is_medical_doc"/>
+                <field name="is_istiqdam_doc"/>
 				<field name="company_id" invisible="1"/>
             </tree>
         </field>
