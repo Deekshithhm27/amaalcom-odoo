@@ -15,10 +15,32 @@ class ServiceEnquiry(models.Model):
     _rec_name = 'name'
     _description = "Service Enquiry"
 
+    @api.model
+    def default_get(self,fields):
+        res = super(ServiceEnquiry,self).default_get(fields)
+        salary_lines = [(5,0,0)]
+        salary_ids = self.env['salary.structure'].search([])
+        for sal in salary_ids:
+            line = (0,0,{
+                'name':sal.id
+                })
+            salary_lines.append(line)
+        res.update({
+            'salary_line_ids':salary_lines
+            })
+        return res
+
     name = fields.Char(string="Enquiry No")
+    active = fields.Boolean('Active', default=True)
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
+    currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=False,
+        related="company_id.currency_id",help="The payment's currency.")
+    
     client_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id)
     approver_id = fields.Many2one('hr.employee',string="Approver")
+    approver_user_id = fields.Many2one('res.users',string="Approver User Id")
+    
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submitted','Ticket Submitted'),
@@ -26,49 +48,51 @@ class ServiceEnquiry(models.Model):
         ('payment_done','Payment Confirmation'),
         ('done', 'Done'),('refuse','Refuse'),('cancel','Cancel')], string='State',default="draft",copy=False,tracking=True)
     service_request = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request",default='lt_request',tracking=True)
-    ev_service_request_type = fields.Selection([('issuance_of_new_ev','Issuance of New EV'),
-        ('sec_letter','SEC Letter'),('issuance_of_hr_card','Issuance for HR card'),
-        ('medical_health_insurance_class_upgrade','Medical health insurance Class Upgrade'),
-        ('iqama_no_generation','Iqama No generation'),('new_physical_iqama_card_request','New Physical Iqama Card Request'),
-        ('qiwa_contract','Qiwa Contract'),('gosi_update','GOSI Update'),('iqama_renewal','Iqama Renewal'),('exit_reentry_issuance','Exit Rentry issuance'),
-        ('profession_change_request_in_qiwa','Profession change Request In qiwa'),('salary_certificate','Salary certificate'),
-        ('bank_letter','Bank letter'),('letter_for_vehicle_lease','Letter for Vehicle Lease'),
-        ('letter_for_apartment_lease','Letter for Apartment Lease'),('istiqdam_form','Istiqdam Form(Family Visa Letter)'),
+    ev_service_request_type = fields.Selection([('new_ev','Issuance of New EV'),
+        ('sec','SEC Letter'),('hr_card','Issuance for HR card'),
+        ('ins_class_upgrade','Medical health insurance Class Upgrade'),
+        ('iqama_no_generation','Iqama No generation'),('iqama_card_req','New Physical Iqama Card Request'),
+        ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),('exit_reentry_issuance','Exit Rentry issuance'),
+        ('prof_change_qiwa','Profession change Request In qiwa'),('salary_certificate','Salary certificate'),
+        ('bank_letter','Bank letter'),('vehicle_lease','Letter for Vehicle Lease'),
+        ('apartment_lease','Letter for Apartment Lease'),('istiqdam_form','Istiqdam Form(Family Visa Letter)'),
         ('family_visa_letter','Family Visa Letter'),('employment_contract','Employment contract'),
         ('cultural_letter','Cultural Letter/Bonafide Letter'),
         ('family_visit_visa','Family Visit Visa'),
         ('emp_secondment_or_cub_contra_ltr','Employee secondment / Subcontract letter'),
-        ('car_loan_letter','Car Loan Letter'),('bank_loan_letter','Bank Loan Letter'),('rental_agreement_letter','Rental Agreement Letter'),
+        ('car_loan','Car Loan Letter'),('bank_loan','Bank Loan Letter'),('rental_agreement','Rental Agreement Letter'),
         ('exception_letter','Exception Letter'),('attestation_waiver_letter','Attestation Waiver Letter'),
         ('embassy_letter','Embassy Letters- as Per Respective Embassy requirement'),('istiqdam_letter','Istiqdam Letter'),
         ('sce_letter','SCE Letter'),('bilingual_salary_certificate','Bilingual Salary Certificate'),('contract_letter','Contract Letter'),
         ('bank_account_opening_letter','Bank account Opening Letter'),('bank_limit_upgrading_letter','Bank Limit upgrading Letter'),
         ('final_exit_issuance','Final exit Issuance'),
         ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Requests")
-    lt_service_request_type = fields.Selection([('issuance_of_hr_card','Issuance for HR card'),
-        ('medical_health_insurance_class_upgrade','Medical health insurance Class Upgrade'),
-        ('iqama_no_generation','Iqama No generation'),('new_physical_iqama_card_request','New Physical Iqama Card Request'),
-        ('qiwa_contract','Qiwa Contract'),('gosi_update','GOSI Update'),('iqama_renewal','Iqama Renewal'),('exit_reentry_issuance','Exit Rentry issuance'),
-        ('profession_change_request_in_qiwa','Profession change Request In qiwa'),('salary_certificate','Salary certificate'),
-        ('bank_letter','Bank letter'),('letter_for_vehicle_lease','Letter for Vehicle Lease'),('letter_for_apartment_lease','Letter for Apartment Lease'),
+    lt_service_request_type = fields.Selection([('hr_card','Issuance for HR card'),
+        ('ins_class_upgrade','Medical health insurance Class Upgrade'),
+        ('iqama_no_generation','Iqama No generation'),('iqama_card_req','New Physical Iqama Card Request'),
+        ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),('exit_reentry_issuance','Exit Rentry issuance'),
+        ('prof_change_qiwa','Profession change Request In qiwa'),('salary_certificate','Salary certificate'),
+        ('bank_letter','Bank letter'),('vehicle_lease','Letter for Vehicle Lease'),('apartment_lease','Letter for Apartment Lease'),
         ('istiqdam_form','Istiqdam Form(Family Visa Letter)'),('family_visa_letter','Family Visa Letter'),('employment_contract','Employment contract'),
         ('cultural_letter','Cultural Letter/Bonafide Letter'),
         ('family_visit_visa','Family Visit Visa'),
         ('emp_secondment_or_cub_contra_ltr','Employee secondment / Subcontract letter'),
-        ('car_loan_letter','Car Loan Letter'),('bank_loan_letter','Bank Loan Letter'),('rental_agreement_letter','Rental Agreement Letter'),
+        ('car_loan','Car Loan Letter'),('bank_loan','Bank Loan Letter'),('rental_agreement','Rental Agreement Letter'),
         ('exception_letter','Exception Letter'),('attestation_waiver_letter','Attestation Waiver Letter'),
         ('embassy_letter','Embassy Letters- as Per Respective Embassy requirement'),('istiqdam_letter','Istiqdam Letter'),
         ('sce_letter','SCE Letter'),('bilingual_salary_certificate','Bilingual Salary Certificate'),('contract_letter','Contract Letter'),
         ('bank_account_opening_letter','Bank account Opening Letter'),('bank_limit_upgrading_letter','Bank Limit upgrading Letter'),
         ('final_exit_issuance','Final exit Issuance'),
         ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Requests")
-    candidate_id = fields.Many2one('visa.candidate',string="Candidate",store=True,tracking=True)
+    
+    employee_id = fields.Many2one('hr.employee',domain="[('employee_type', '=', 'external'),('client_id','=',client_id)]",string="Employee",store=True,tracking=True)
+    
     emp_visa_id = fields.Many2one('employment.visa',string="Service Id",tracking=True)
 
     @api.onchange('emp_visa_id')
-    def update_candidate_id(self):
+    def update_employee_id(self):
         for line in self:
-            line.candidate_id = line.emp_visa_id.candidate_id
+            line.employee_id = line.emp_visa_id.employee_id
 
 
 
@@ -98,14 +122,14 @@ class ServiceEnquiry(models.Model):
     upload_iqama_card = fields.Binary(string="Upload Iqama Card")
     upload_iqama_card_doc = fields.Binary(string="Upload Iqama Card")
     upload_iqama_card_no_doc = fields.Binary(string="Upload Iqama Card")
-    upload_qiwa_contract_doc = fields.Binary(string="Upload Qiwa Contract")
-    upload_gosi_update_doc = fields.Binary(string="Upload GOSI Update")
+    upload_qiwa_doc = fields.Binary(string="Upload Qiwa Contract")
+    upload_gosi_doc = fields.Binary(string="Upload GOSI Update")
     profession_change_doc = fields.Binary(string="Profession Change Req. Doc")
     profession_change_final_doc = fields.Binary(string="Profession Change Req. Doc")
     upload_salary_certificate_doc = fields.Binary(string="Salary Certificate")
     upload_bank_letter_doc = fields.Binary(string="Bank Letter")
-    upload_letter_for_vehicle_lease_doc = fields.Binary(string="Letter for Vehicle lease")
-    upload_letter_for_apartment_lease_doc = fields.Binary(string="Letter for Apartment lease")
+    upload_vehicle_lease_doc = fields.Binary(string="Letter for Vehicle lease")
+    upload_apartment_lease_doc = fields.Binary(string="Letter for Apartment lease")
     upload_family_visa_letter_doc = fields.Binary(string="Family Visa Letter")
     upload_visit_visa_app_doc = fields.Binary(string="Upload Visit Visa application")
     upload_family_visit_visa_doc = fields.Binary(string="Family Visit Visa Doc")
@@ -119,9 +143,9 @@ class ServiceEnquiry(models.Model):
     upload_final_exit_issuance_doc = fields.Binary(string="Final Exit issuance doc")
     upload_soa_doc = fields.Binary(string="SOA Doc")
     upload_emp_secondment_or_cub_contra_ltr_doc = fields.Binary(string="Employee secondment / Subcontract Document")
-    upload_car_loan_letter_doc = fields.Binary(string="Car Loan Document")
-    upload_bank_loan_letter_doc = fields.Binary(string="Bank Loan Document")
-    upload_rental_agreement_letter_doc = fields.Binary(string="Rental Agreement Document")
+    upload_car_loan_doc = fields.Binary(string="Car Loan Document")
+    upload_bank_loan_doc = fields.Binary(string="Bank Loan Document")
+    upload_rental_agreement_doc = fields.Binary(string="Rental Agreement Document")
     upload_exception_letter_doc = fields.Binary(string="Exception Document")
     upload_attestation_waiver_letter_doc = fields.Binary(string="Attestation Waiver Document")
     upload_embassy_letter_doc = fields.Binary(string="Embassy Letter")
@@ -161,7 +185,7 @@ class ServiceEnquiry(models.Model):
 
     upload_issuance_doc = fields.Binary(string="Upload Issuance of Visa Document")
     upload_enjaz_doc = fields.Binary(string="Enjaz Document")
-    upload_sec_letter_doc = fields.Binary(string="SEC Letter")
+    upload_sec_doc = fields.Binary(string="SEC Letter")
 
     visa_document = fields.Binary(string="Visa Document")
     chamber = fields.Selection([('yes','Yes'),('no','No')],string="Chamber")
@@ -173,15 +197,36 @@ class ServiceEnquiry(models.Model):
     cost_difference = fields.Selection([('aamalcom','Aamalcom'),('lti','LTI')],string="Cost Difference")
 
 
-
-
-
     # Common fields
     employment_duration = fields.Many2one('employment.duration',string="Duration",tracking=True)
     exit_type = fields.Selection([('single','Single'),('multiple','Multiple')],string="Type")
 
     fees_to_be_paid = fields.Selection([('aamalcom','Aamalcom'),('client','Client')],string="Fees to be paid by")
-    fees_to_be_paid_by = fields.Selection([('aamalcom','Aamalcom'),('client','Client'),('candidate','Candidate')],string="Fees to be paid by")
+    fees_to_be_paid_by = fields.Selection([('aamalcom','Aamalcom'),('client','Client'),('employee','Employee')],string="Fees to be paid by")
+    self_pay = fields.Boolean(string="Self")
+    aamalcom_pay = fields.Boolean(string="Aamalcom")
+    employee_pay = fields.Boolean(string="Employee")
+
+    @api.onchange('self_pay')
+    def update_fees_paid_by_self(self):
+        for line in self:
+            if line.self_pay == True:
+                line.aamalcom_pay = False
+                line.employee_pay = False
+    @api.onchange('aamalcom_pay')
+    def update_fees_paid_by_aamalcom(self):
+        for line in self:
+            if line.aamalcom_pay == True:
+                line.self_pay = False
+                line.employee_pay = False
+    @api.onchange('employee_pay')
+    def update_fees_paid_by_employee(self):
+        for line in self:
+            if line.employee_pay == True:
+                line.aamalcom_pay = False
+                line.self_pay = False
+    self_bill = fields.Boolean(string="Self")
+            
     to_be_issued_date = fields.Date(string="To be issued from")
 
     current_insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Current Insurance Class")
@@ -229,7 +274,6 @@ class ServiceEnquiry(models.Model):
     weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)",tracking=True)
 
     # # Documents
-    # document_line_ids = fields.One2many('candidate.documents.line','service_request_id',string="Documents")
     signed_offer_letter = fields.Binary(string="Signed Offer letter/should be attached *")
     passport_copy = fields.Binary(string="Passport copy *")
     border_copy = fields.Binary(string="Border Id *")
@@ -243,22 +287,9 @@ class ServiceEnquiry(models.Model):
     other_doc_3 = fields.Binary(string="Others")
     other_doc_4 = fields.Binary(string="Others")
     
-
     salary_line_ids = fields.One2many('salary.line', 'ev_enq_visa_id', string="Salary Structure")
-    @api.model
-    def default_get(self,fields):
-        res = super(ServiceEnquiry,self).default_get(fields)
-        salary_lines = [(5,0,0)]
-        salary_ids = self.env['salary.structure'].search([])
-        for sal in salary_ids:
-            line = (0,0,{
-                'name':sal.id
-                })
-            salary_lines.append(line)
-        res.update({
-            'salary_line_ids':salary_lines
-            })
-        return res
+    
+
 
     # Profession Details
     visa_profession = fields.Char(string="Visa Profession *")
@@ -284,7 +315,19 @@ class ServiceEnquiry(models.Model):
     medical_insurance_for = fields.Selection([('self','Self'),('family','Family')],string="Medical Insurance For?")
     
     dependent_document_ids = fields.One2many('dependent.documents','ev_enq_dependent_document_id',string="Dependent Documents")
-    
+
+    service_enquiry_pricing_ids = fields.One2many('service.enquiry.pricing.line','service_enquiry_id')
+
+    total_amount = fields.Monetary(string="Total Amount" ,store=True, readonly=True, tracking=True,compute="_compute_amount")
+
+    @api.depends('service_enquiry_pricing_ids.amount')
+    def _compute_amount(self):
+        total_amount = 0.0
+        for line in self:
+            for lines in line.service_enquiry_pricing_ids:
+                total_amount += lines.amount
+
+            line.total_amount = total_amount    
 
 
     # LT fields
@@ -300,16 +343,18 @@ class ServiceEnquiry(models.Model):
     def action_submit(self):
         for line in self:
             line.state = 'submitted'
-            self.approver_id = self.client_id.company_spoc_id.id 
+            line.doc_uploaded = False
             self._add_followers()
 
     def action_require_payment_confirmation(self):
         for line in self:
             line.state = 'payment_initiation'
+            line.doc_uploaded = False
 
     def action_submit_payment_confirmation(self):
         for line in self:
             line.state = 'payment_done'
+            line.doc_uploaded = False
 
     
 
@@ -322,6 +367,7 @@ class ServiceEnquiry(models.Model):
     def action_submit_initiate(self):
         for line in self:
             line.state = 'submitted'
+            self._add_followers()
 
     def action_process_complete(self):
         for line in self:
@@ -366,6 +412,7 @@ class ServiceEnquiry(models.Model):
     def action_iqama_submit(self):
         for line in self:
             line.state = 'submitted'
+            self._add_followers()
 
     def action_iqama_payment_received_confirmation(self):
         for line in self:
@@ -379,11 +426,11 @@ class ServiceEnquiry(models.Model):
 
  
     # Issuance of New EV start
-    def action_submit_issuance_of_new_ev(self):
+    def action_submit_new_ev(self):
         for line in self:
             line.state = 'submitted'
 
-    def action_issuance_of_new_ev_process_complete(self):
+    def action_new_ev_process_complete(self):
         for line in self:
             line.state='done'
 
@@ -409,33 +456,61 @@ class ServiceEnquiry(models.Model):
 
 
     doc_uploaded = fields.Boolean(string="Document uploaded",default=False)
-    @api.onchange('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_contract_doc',
-        'upload_gosi_update_doc','upload_hr_card','upload_confirmation_of_exit_reentry','upload_exit_reentry_visa','profession_change_doc',
-        'upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','upload_letter_for_vehicle_lease_doc',
-        'upload_letter_for_apartment_lease_doc','upload_istiqdam_form_doc','upload_family_visa_letter_doc','upload_employment_contract_doc',
+    final_doc_uploaded = fields.Boolean(string="Final Document uploaded",default=False)
+    @api.onchange('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
+        'upload_gosi_doc','upload_hr_card','upload_confirmation_of_exit_reentry','upload_exit_reentry_visa','profession_change_doc',
+        'upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','upload_vehicle_lease_doc',
+        'upload_apartment_lease_doc','upload_istiqdam_form_doc','upload_family_visa_letter_doc','upload_employment_contract_doc',
         'upload_cultural_letter_doc','upload_family_visit_visa_doc',
-        'upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_letter_doc','upload_bank_loan_letter_doc','upload_rental_agreement_letter_doc',
+        'upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc','upload_bank_loan_doc','upload_rental_agreement_doc',
         'upload_exception_letter_doc','upload_attestation_waiver_letter_doc','upload_embassy_letter_doc','upload_istiqdam_letter_doc','upload_sce_letter_doc',
         'upload_bilingual_salary_certificate_doc','upload_contract_letter_doc','upload_bank_account_opening_letter_doc','upload_bank_limit_upgrading_letter_doc','upload_final_exit_issuance_doc','upload_soa_doc',
-        'upload_sec_letter_doc')
+        'upload_sec_doc','residance_doc','muqeem_print_doc')
     def document_uploaded(self):
         for line in self:
-            if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_contract_doc or \
-            line.upload_gosi_update_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or line.profession_change_final_doc or \
-            line.upload_salary_certificate_doc or line.upload_bank_letter_doc or line.upload_letter_for_vehicle_lease_doc or line.upload_letter_for_apartment_lease_doc or \
+            if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \
+            line.upload_gosi_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or line.profession_change_final_doc or \
+            line.upload_salary_certificate_doc or line.upload_bank_letter_doc or line.upload_vehicle_lease_doc or line.upload_apartment_lease_doc or \
             line.upload_istiqdam_form_doc or line.upload_family_visa_letter_doc or line.upload_employment_contract_doc or line.upload_cultural_letter_doc or \
             line.upload_family_visit_visa_doc or \
-            line.upload_emp_secondment_or_cub_contra_ltr_doc or line.upload_car_loan_letter_doc or line.upload_bank_loan_letter_doc or line.upload_rental_agreement_letter_doc or \
+            line.upload_emp_secondment_or_cub_contra_ltr_doc or line.upload_car_loan_doc or line.upload_bank_loan_doc or line.upload_rental_agreement_doc or \
             line.upload_exception_letter_doc or line.upload_attestation_waiver_letter_doc or line.upload_embassy_letter_doc or line.upload_istiqdam_letter_doc or line.upload_sce_letter_doc or \
             line.upload_bilingual_salary_certificate_doc or line.upload_contract_letter_doc or line.upload_bank_account_opening_letter_doc or line.upload_bank_limit_upgrading_letter_doc or \
-            line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_sec_letter_doc:
+            line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_sec_doc:
                 line.doc_uploaded = True
             elif line.upload_confirmation_of_exit_reentry and line.upload_exit_reentry_visa:
                 line.doc_uploaded = True
             else:
                 line.doc_uploaded = False
+                
+            if line.residance_doc and line.muqeem_print_doc:
+                line.final_doc_uploaded = True
+            else:
+                line.final_doc_uploaded = False
 
     @api.onchange('ev_service_request_type','lt_service_request_type')
     def update_doc_updated(self):
         for line in self:
             line.doc_uploaded = False
+            self.approver_id = self.client_id.company_spoc_id.id 
+            self.approver_user_id = self.approver_id.user_id.id
+
+
+
+
+
+
+class ServiceEnquiryPricingLine(models.Model):
+    _name = 'service.enquiry.pricing.line'
+
+
+    service_enquiry_id = fields.Many2one('service.enquiry')
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
+    currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=False,
+        related="company_id.currency_id",help="The payment's currency.")
+
+    service_pricing_id = fields.Many2one('service.pricing',string="Service Name")
+    service_pricing_line_id = fields.Many2one('service.pricing.line',string="Duration")
+    amount = fields.Monetary(string="Amount",store=True,related="service_pricing_line_id.amount")
+    remarks = fields.Text(string="Remarks",store=True,related="service_pricing_line_id.remarks")

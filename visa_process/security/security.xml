@@ -8,9 +8,9 @@
     </record>
     <record id="group_service_request_client_spoc" model="res.groups">
         <field name="name">Client Spoc</field>
-        <field name="comment">The user will have access to add candidate and raise service request.</field>
+        <field name="comment">The user will have access to add employee and raise service request.</field>
         <field name="category_id" ref="visa_process.module_category_service_request"/>
-        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="implied_ids" eval="[(4, ref('base.user_root')),(4, ref('base.group_user'))]"/>
     </record>
     <record id="group_service_request_manager" model="res.groups">
         <field name="name">Company Spoc</field>
@@ -21,8 +21,24 @@
     <record id="group_service_request_administrator" model="res.groups">
         <field name="name">Administrator</field>
         <field name="comment">The user will have access to configure API connection.</field>
-        <field name="implied_ids" eval="[(4, ref('visa_process.group_service_request_manager'))]"/>
+        <field name="implied_ids" eval="[(4, ref('visa_process.group_service_request_manager')),(4, ref('visa_process.group_service_request_client_spoc'))]"/>
         <field name="category_id" ref="visa_process.module_category_service_request"/>
+        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <!-- adding client as group for access right -->
+    <record id="group_hr_client" model="res.groups">
+        <field name="name">Client</field>
+        <field name="category_id" ref="base.module_category_human_resources_employees"/>
+        <field name="implied_ids" eval="[(6, 0, [ref('base.group_private_addresses'), ref('base.group_user')])]"/>
+        <field name="comment">The user will be able to access his employees.</field>
+    </record>
+
+    <record id="hr.group_hr_manager" model="res.groups">
+        <field name="name">Administrator</field>
+        <field name="comment">The user will have access to the human resources configuration as well as statistic reports.</field>
+        <field name="category_id" ref="base.module_category_human_resources_employees"/>
+        <field name="implied_ids" eval="[(4, ref('hr.group_hr_user')),(4, ref('group_hr_client'))]"/>
         <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
     

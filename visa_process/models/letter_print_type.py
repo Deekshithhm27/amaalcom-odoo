@@ -13,5 +13,7 @@ class LetterPrintType(models.Model):
     _description = "Letter Print Type"
     _inherit = ['mail.thread']
 
-    name = fields.Char(string="Type")
-    # print_type = fields.Selection([('coc','COC'),('letterhead','Letter head'),('mofa','MOFA')],string="Type")
+    name = fields.Char(string="Name")
+    active = fields.Boolean('Active', default=True)
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)

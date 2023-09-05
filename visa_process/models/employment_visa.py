@@ -15,14 +15,35 @@ class EmploymentVisa(models.Model):
     _rec_name = 'name'
     _description = "EV Request"
 
+
+    @api.model
+    def default_get(self,fields):
+        res = super(EmploymentVisa,self).default_get(fields)
+        salary_lines = [(5,0,0)]
+        salary_ids = self.env['salary.structure'].search([])
+        for sal in salary_ids:
+            line = (0,0,{
+                'name':sal.id
+                })
+            salary_lines.append(line)
+        res.update({
+            'salary_line_ids':salary_lines
+            })
+        return res
+
     
     name = fields.Char(string="Sequence",help="The Unique Sequence no", readonly=True, default='/')
-    candidate_id = fields.Many2one('visa.candidate',string="Candidate name(as per passport)",tracking=True,required=True)
-    dob = fields.Date(string="DOB",tracking=True)
+    active = fields.Boolean('Active', default=True)
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
+    currency_id = fields.Many2one(related='company_id.currency_id', store=True, readonly=True)
+
+    employee_id = fields.Many2one('hr.employee',domain="[('employee_type', '=', 'external')]",string="Employee name(as per passport)",tracking=True,required=True)
+    birthday = fields.Date(string="Date of Birth",tracking=True)
     contact_no = fields.Char(string="Contact # in the country",tracking=True)
     current_contact = fields.Char(string="Current Contact # (if Outside the country) *",tracking=True)
-    email = fields.Char(string="Email Id *",tracking=True)
-    nationality_id = fields.Many2one('res.country',string="Nationality",tracking=True)
+    private_email = fields.Char(string="Email Id *",tracking=True)
+    country_id = fields.Many2one('res.country',string="Nationality",tracking=True)
     phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
     current_phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
 
@@ -49,11 +70,8 @@ class EmploymentVisa(models.Model):
     weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)",tracking=True)
 
     client_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id)
-    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
-    currency_id = fields.Many2one(related='company_id.currency_id', store=True, readonly=True)
 
     # # Documents
-    # document_line_ids = fields.One2many('candidate.documents.line','service_request_id',string="Documents")
     signed_offer_letter = fields.Binary(string="Signed Offer letter/should be attached *")
     passport_copy = fields.Binary(string="Passport copy *")
     border_copy = fields.Binary(string="Border Id *")
@@ -68,28 +86,14 @@ class EmploymentVisa(models.Model):
     other_doc_4 = fields.Binary(string="Others")
     
 
-    service_request_type_id = fields.Many2one('ev.service.request.type',string="Service Request Type")
     salary_line_ids = fields.One2many('salary.line', 'emp_visa_id', string="Salary Structure")
-    @api.model
-    def default_get(self,fields):
-        res = super(EmploymentVisa,self).default_get(fields)
-        salary_lines = [(5,0,0)]
-        salary_ids = self.env['salary.structure'].search([])
-        for sal in salary_ids:
-            line = (0,0,{
-                'name':sal.id
-                })
-            salary_lines.append(line)
-        res.update({
-            'salary_line_ids':salary_lines
-            })
-        return res
+    
     approver_id = fields.Many2one('hr.employee',string="Approver")
 
     # Profession Details
     visa_profession = fields.Char(string="Visa Profession *")
     visa_religion = fields.Selection([('muslim','Muslim'),('non_muslim','Non-Muslim'),('others','Others')],string="Visa Religion *")
-    visa_nationality_id = fields.Many2one('res.country',string="Visa Nationality *")
+    visa_country_id = fields.Many2one('res.country',string="Visa Nationality *")
     visa_stamping_city_id = fields.Char(string="Visa Stamping City *")
     visa_enjaz = fields.Char(string="Visa Enjaz Details *")
     no_of_visa = fields.Integer(string="No of Visa *")
@@ -119,22 +123,22 @@ class EmploymentVisa(models.Model):
             for line in doc_ids:
                 self.medical_doc = line.medical_doc
 
-    @api.onchange('candidate_id')
-    def onchange_candidate_update_data(self):
+    @api.onchange('employee_id')
+    def onchange_employee_update_data(self):
         for line in self:
-            if line.candidate_id:
-                line.nationality_id = line.candidate_id.nationality_id
-                line.email = line.candidate_id.email
-                line.marital = line.candidate_id.marital
-                line.employment_duration = line.candidate_id.employment_duration
-                line.probation_term = line.candidate_id.probation_term
-                line.notice_period = line.candidate_id.notice_period
-                line.weekly_off_days = line.candidate_id.weekly_off_days
-                line.doj = line.candidate_id.doj
-                line.work_location_id = line.candidate_id.work_location_id
-                line.dob = line.candidate_id.dob
-                line.contact_no = line.candidate_id.contact_no
-                line.current_contact = line.candidate_id.current_contact
+            if line.employee_id:
+                line.country_id = line.employee_id.country_id
+                line.private_email = line.employee_id.private_email
+                line.marital = line.employee_id.marital
+                line.employment_duration = line.employee_id.employment_duration
+                line.probation_term = line.employee_id.probation_term
+                line.notice_period = line.employee_id.notice_period
+                line.weekly_off_days = line.employee_id.weekly_off_days
+                line.doj = line.employee_id.doj
+                line.work_location_id = line.employee_id.work_location_id
+                line.birthday = line.employee_id.birthday
+                line.contact_no = line.employee_id.contact_no
+                line.current_contact = line.employee_id.current_contact
 
 
     def unlink(self):
@@ -174,7 +178,7 @@ class EmploymentVisa(models.Model):
         # vals = {
         #     'client_id': self.client_id.id,
         #     'emp_visa_id': self.id,
-        #     'candidate_id':self.candidate_id.id,
+        #     'employee_id':self.employee_id.id,
         #     # 'category_id':[(6, 0, categ_ids)],
         #     # 'preffered_location_id':[(6, 0, preffered_location_ids)],
         #     'designation':self.designation,
@@ -185,7 +189,6 @@ class EmploymentVisa(models.Model):
         #     'probation_term':self.probation_term,
         #     'notice_period':self.notice_period,
         #     'weekly_off_days':self.weekly_off_days,
-        #     'service_request_type_id':self.service_request_type_id.id,
         #     'document_creation_date':date,
         #     'approver_id':self.client_id.company_spoc_id.id,
         # }
@@ -196,7 +199,7 @@ class EmploymentVisa(models.Model):
             raise UserError(_('Please add Visa Profession!'))
         if not self.visa_religion:
             raise UserError(_('Please add Visa Religion!'))
-        if not self.visa_nationality_id:
+        if not self.visa_country_id:
             raise UserError(_('Please add Visa Nationality!'))
         if not self.visa_stamping_city_id:
             raise UserError(_('Please add Visa Stamping City!'))
@@ -208,7 +211,7 @@ class EmploymentVisa(models.Model):
             raise UserError(_('Please add Visa Gender!'))
         if not self.qualification:
             raise UserError(_('Please add Education Qualification!'))
-        if not self.email:
+        if not self.private_email:
             raise UserError(_("Please add Email Id"))
         if not self.current_contact:
             raise UserError(_("Please add Current Contact # (if Outside the country)"))
@@ -234,12 +237,6 @@ class EmploymentVisa(models.Model):
             raise UserError(_("Please attach Bank Iban Letter"))
         if not self.certificate_1:
             raise UserError(_("Please attach Certificate"))
-
-
-
-
-
-
 
         self._add_followers()
         self.approver_id = self.client_id.company_spoc_id.id 

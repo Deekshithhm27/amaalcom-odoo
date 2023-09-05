@@ -13,6 +13,7 @@
                     <button name="action_cancel" string="Cancel" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'in',('draft','cancel','approved','reject'))]}" groups="visa_process.group_service_request_client_spoc"/>
                 </header>
                 <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <separator string="Local Transfer Information" groups="hr.group_hr_user"/>
                     <div class="oe_title">
                         <h1>
@@ -21,15 +22,14 @@
                     </div>
                     <group>
                         <group>
-                            <field name="service_request_type_id" invisible="1"/>
-                            <field name="candidate_id"/>
-                            <field name="nationality_id" options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="employee_id"/>
+                            <field name="country_id" options="{'no_create': True, 'no_edit': True}"/>
                             <field name="marital"/>
                             <field name="iqama_no"/>
                         </group>
                         <group>
-                            <field name="dob"/>
-                            <field name="email"/>
+                            <field name="birthday"/>
+                            <field name="private_email"/>
                             <label for="contact_no"/>
                             <div>
                                 <field name="phone_code_id" style="width: 120px" options="{'no_create': True, 'no_edit': True}"/>
@@ -38,6 +38,8 @@
                             </div>
                             
                             <field name="client_id" readonly="1"/>
+                            <field name="user_id" invisible="1"/>
+                            <field name="active" invisible="1"/>
                             <field name="company_id" invisible="1"/>
                             <field name="approver_id" attrs="{'invisible': [('approver_id', '=',False)],'readonly':[('approver_id','!=',False)]}"/>
                         </group>
@@ -158,7 +160,7 @@
         <field name="arch" type="xml">
             <tree string="Local Transfer" decoration-danger="state == 'reject'" decoration-muted="state == 'cancel'" decoration-success="state == 'approved'" decoration-primary="state == 'waiting'">
                 <field name="name"/>
-                <field name="candidate_id"/>
+                <field name="employee_id"/>
                 <field name="client_id"/>
                 <field name="doj"/>
                 <field name="employment_duration"/>
@@ -171,11 +173,16 @@
         <field name="model">local.transfer</field>
         <field name="arch" type="xml">
             <search string="Filter">
-                <field name="candidate_id" string="Candidate"/>
+                <field name="employee_id" string="Employee"/>
                 <field name="client_id" string="Client"/>
+                <field name="country_id" string="Nationality"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
                 <group expand="0" string="Group By...">
-                    <filter name="group_candidate" string="Candidate" context="{'group_by':'candidate_id'}"/>
+                    <filter name="group_employee" string="Employee" context="{'group_by':'employee_id'}"/>
                     <filter name="group_client_id" string="Client" context="{'group_by':'client_id'}"/>
+                    <filter name="group_nationality" string="Nationality" context="{'group_by':'country_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by':'state'}"/>
                 </group>
             </search>
         </field>
@@ -186,5 +193,6 @@
         <field name="name">Local Transfer</field>
         <field name="res_model">local.transfer</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="local_transfer_filter"/>
     </record>
 </odoo>

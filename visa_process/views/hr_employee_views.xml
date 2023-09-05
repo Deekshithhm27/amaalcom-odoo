@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_employee_form_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='coach_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="replace">
+                <field name="name" placeholder="Name as per Passport" required="True"/>
+            </xpath>
+            <xpath expr="//field[@name='mobile_phone']" position="before">
+                <field name="surname"/>
+                <field name="given_name"/>
+                <field name="employee_type" invisible="1"/>
+                <field name="client_id" invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <label for="contact_no"/>
+                <div>
+                    <field name="phone_code_id" style="width: 120px" options="{'no_create': True, 'no_edit': True}"/>
+
+                    <field name="contact_no" style="width: 150px"/>
+                </div>
+                <label for="current_contact"/>
+                <div>
+                    <field name="current_phone_code_id" style="width: 120px" options="{'no_create': True, 'no_edit': True}"/>
+
+                    <field name="current_contact" style="width: 150px"/>
+                </div>
+            </xpath>
+            <xpath expr="//page[@name='personal_information']/group[1]/group[2]" position="after">
+                <group string="Religion Details">
+                    <field name="religion"/>
+                </group>
+
+            </xpath>
+            <xpath expr="//page[@name='hr_settings']" position="after">
+                <page name="public" string="Uploads">
+                    <div class="row">
+                        <div class="col-lg-7 d-flex">
+                            <group>
+                                <field name="iqama_certificate"/>
+                                <field name="degree_certificate"/>
+                            </group>
+                        </div>
+                    </div>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='public']/div[1]/div[1]/group[@name='managers']" position="after">
+                <group name="employment_details" string="Employment Details">
+                    <group>
+                        <field name="iqama"/>
+                        <field name="doj"/>
+                        <field name="employment_duration"/>
+                        <field name="probation_term"/>
+                    </group>
+                    <group>
+                        <field name="notice_period"/>
+                        <field name="working_days"/>
+                        <field name="weekly_off_days"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- Overriding records -->
+    <record id="hr.open_view_employee_list_my" model="ir.actions.act_window">
+            <field name="name">Employees</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_mode">kanban,tree,form,activity</field>
+            <field name="domain">[('client_id','=',uid.partner_id),'&amp;',('client_id','!=',False),'|',('user_id','=',uid),('parent_id','=',uid.employee_id)]</field>
+            <field name="context">{'chat_icon': True}</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="hr.view_employee_filter"/>
+            <field name="help" type="html">
+             <p class="o_view_nocontent_smiling_face">
+               Add a new employee
+             </p><p>
+               With just a quick glance on the Odoo employee screen, you
+               can easily find all the information you need for each person;
+               contact data, job position, availability, etc.
+             </p>
+            </field>
+        </record>
+</odoo>

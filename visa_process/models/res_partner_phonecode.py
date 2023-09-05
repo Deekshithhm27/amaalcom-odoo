@@ -16,6 +16,10 @@ class ResPartnerPhonecode(models.Model):
     _description = "Salary Structure"
 
     name = fields.Char(string="Code")
+    active = fields.Boolean('Active', default=True)
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
+
     country_id = fields.Many2one('res.country',string='Country')
 
     def name_get(self):

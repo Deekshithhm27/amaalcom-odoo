@@ -15,8 +15,11 @@ class VisaRefDocument(models.Model):
     _rec_name = 'name'
     _description = "Reference Documents"
 
-    name = fields.Char(string="Document",tracking=True)
+    name = fields.Char(string="Document Name",tracking=True)
+    active = fields.Boolean('Active', default=True)
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
+
     is_medical_doc = fields.Boolean(string="Is Medical Doc")
     medical_doc = fields.Binary(string="File")
 

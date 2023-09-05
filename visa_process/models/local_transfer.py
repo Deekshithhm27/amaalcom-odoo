@@ -15,15 +15,37 @@ class LocalTransfer(models.Model):
     _rec_name = 'name'
     _description = "Local Transfer"
 
+
+    @api.model
+    def default_get(self,fields):
+        res = super(LocalTransfer,self).default_get(fields)
+        salary_lines = [(5,0,0)]
+        salary_ids = self.env['salary.structure'].search([])
+        for sal in salary_ids:
+            line = (0,0,{
+                'name':sal.id
+                })
+            salary_lines.append(line)
+        res.update({
+            'salary_line_ids':salary_lines
+            })
+        return res
+
     
     name = fields.Char(string="Sequence",help="The Unique Sequence no", readonly=True, default='/')
 
+    active = fields.Boolean('Active', default=True)
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
+    currency_id = fields.Many2one(related='company_id.currency_id', store=True, readonly=True)
+    client_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id)
+    approver_id = fields.Many2one('hr.employee',string="Approver")
 
-    candidate_id = fields.Many2one('visa.candidate',string="Candidate name (as per Passport)",tracking=True,required=True)
-    dob = fields.Date(string="DOB *",tracking=True)
+    employee_id = fields.Many2one('hr.employee',domain="[('employee_type', '=', 'external')]",string="Employee name (as per Passport)",tracking=True,required=True)
+    birthday = fields.Date(string="Date of Birth *",tracking=True)
     contact_no = fields.Char(string="Cell No. (Absher) *")
-    email = fields.Char(string="Email Id *",tracking=True)
-    nationality_id = fields.Many2one('res.country',string="Nationality",tracking=True)
+    private_email = fields.Char(string="Email Id *",tracking=True)
+    country_id = fields.Many2one('res.country',string="Nationality",tracking=True)
     phone_code_id = fields.Many2one('res.partner.phonecode',string="Phone code")
 
     marital = fields.Selection([
@@ -45,12 +67,10 @@ class LocalTransfer(models.Model):
     working_hours = fields.Char(string="Working Hours *")
     annual_vacation = fields.Char(string="Annual Vacation *")
 
-    client_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id)
-    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
-    currency_id = fields.Many2one(related='company_id.currency_id', store=True, readonly=True)
+    
+    
 
     # # Documents
-    # document_line_ids = fields.One2many('candidate.documents.line','service_request_id',string="Documents")
     passport_size_photo = fields.Binary(string="Passport Size Photo")
     dependents_if_any = fields.Binary(string="Dependents if any")
     signed_offer_letter = fields.Binary(string="Signed Offer Letter *")
@@ -63,24 +83,9 @@ class LocalTransfer(models.Model):
     other_doc_3 = fields.Binary(string="Others")
     other_doc_4 = fields.Binary(string="Others")
     
-    service_request_type_id = fields.Many2one('lt.service.request.type',string="Service Request Type")
     salary_line_ids = fields.One2many('salary.line', 'local_transfer_id', string="Salary Structure")
 
-    @api.model
-    def default_get(self,fields):
-        res = super(LocalTransfer,self).default_get(fields)
-        salary_lines = [(5,0,0)]
-        salary_ids = self.env['salary.structure'].search([])
-        for sal in salary_ids:
-            line = (0,0,{
-                'name':sal.id
-                })
-            salary_lines.append(line)
-        res.update({
-            'salary_line_ids':salary_lines
-            })
-        return res
-    approver_id = fields.Many2one('hr.employee',string="Approver")
+    
 
     # Profession Details
     profession_en = fields.Char(string="Profession En.")
@@ -107,17 +112,17 @@ class LocalTransfer(models.Model):
 
     notes = fields.Text(string="Notes")
 
-    @api.onchange('candidate_id')
-    def onchange_candidate_update_data(self):
+    @api.onchange('employee_id')
+    def onchange_employee_update_data(self):
         for line in self:
-            if line.candidate_id:
-                line.nationality_id = line.candidate_id.nationality_id
-                line.email = line.candidate_id.email
-                line.marital = line.candidate_id.marital
-                line.employment_duration = line.candidate_id.employment_duration
-                line.doj = line.candidate_id.doj
-                line.work_location_id = line.candidate_id.work_location_id
-                line.dob = line.candidate_id.dob
+            if line.employee_id:
+                line.country_id = line.employee_id.country_id
+                line.private_email = line.employee_id.private_email
+                line.marital = line.employee_id.marital
+                line.employment_duration = line.employee_id.employment_duration
+                line.doj = line.employee_id.doj
+                line.work_location_id = line.employee_id.work_location_id
+                line.birthday = line.employee_id.birthday
 
 
     def unlink(self):
@@ -157,7 +162,7 @@ class LocalTransfer(models.Model):
         # vals = {
         #     'client_id': self.client_id.id,
         #     'service_req_id': self.id,
-        #     'candidate_id':self.candidate_id.id,
+        #     'employee_id':self.employee_id.id,
         #     # 'category_id':[(6, 0, categ_ids)],
         #     # 'preffered_location_id':[(6, 0, preffered_location_ids)],
         #     'designation':self.designation,
@@ -177,11 +182,11 @@ class LocalTransfer(models.Model):
             raise UserError(_('Please add Duration of Employment!'))
         if not self.qualification:
             raise UserError(_('Please add Education Qualification!'))
-        if not self.email:
+        if not self.private_email:
             raise UserError(_("Please add Email Id"))
         if not self.signed_offer_letter:
             raise UserError(_("Please attach signed offer letter"))
-        if not self.dob:
+        if not self.birthday:
             raise UserError(_("Please add Birth date"))
         if not self.working_days:
             raise UserError(_("Please add Working Days"))

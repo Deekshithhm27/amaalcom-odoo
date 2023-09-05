@@ -5,18 +5,37 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="is_client" invisible="1"/>
+            </xpath>
             <xpath expr="//field[@name='category_id']" position="after">
-                <field name="client_code" groups="visa_process.group_service_request_manager"/>
-                <field name="company_spoc_id" groups="visa_process.group_service_request_manager"/>
+                <field name="client_code" groups="visa_process.group_service_request_manager" attrs="{'invisible':['|',('is_client','=',True),('is_company','=',False)]}"/>
+                <field name="company_spoc_id" attrs="{'required':[('is_client', '=', True)],'invisible':[('is_client','=',False)]}" groups="visa_process.group_service_request_manager"/>
             </xpath>
             <div name="button_box" position="inside">
-                <button type="action" class="oe_inline oe_stat_button" name="%(visa_process.candidate_form_action_view_active_by_client)d" icon="fa-bars" attrs="{'invisible':[('candidates_count','=',0)]}">
-                    <field name="candidates_count" widget="statinfo"/>
+                <button type="action" class="oe_inline oe_stat_button" name="%(visa_process.hr_employee_form_action_view_active_by_client)d" icon="fa-bars" attrs="{'invisible':[('employees_count','=',0)]}" groups="visa_process.group_hr_client,hr.group_hr_manager">
+                    <field name="employees_count" widget="statinfo"/>
                 </button>
                 <button type="action" class="oe_inline oe_stat_button" name="%(visa_process.employment_visa_form_action_view_active_by_client)d" icon="fa-bars" attrs="{'invisible':[('employment_visa_count','=',0)]}">
                     <field name="employment_visa_count" widget="statinfo"/>
                 </button>
             </div>
+        </field>
+    </record>
+
+    <record id="action_self_contacts" model="ir.actions.act_window">
+        <field name="name">Contacts</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form,activity</field>
+        <field name="search_view_id" ref="base.view_res_partner_filter"/>
+        <field name="domain">[('user_ids', 'in', [uid])]</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Create a Contact in your address book
+          </p><p>
+            Odoo helps you track all activities related to your contacts.
+          </p>
         </field>
     </record>
 </odoo>

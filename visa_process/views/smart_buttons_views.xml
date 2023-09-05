@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- below record is used to fetch total candidates count in contact screen -->
-    <record  model="ir.actions.act_window" id="candidate_form_action_view_active_by_client">
-        <field name="name">Candidates</field>
-        <field name="res_model">visa.candidate</field>
+    <!-- below record is used to fetch total employees count in contact screen -->
+    <record  model="ir.actions.act_window" id="hr_employee_form_action_view_active_by_client">
+        <field name="name">Employees</field>
+        <field name="res_model">hr.employee</field>
         <field name="view_mode">tree,form</field>
         <field name="view_ids" eval="[(5, 0, 0),
-                      (0, 0, {'view_mode': 'tree', 'view_id': ref('visa_process.visa_candidate_tree')}),
-                      (0, 0, {'view_mode': 'form', 'view_id': ref('visa_process.visa_candidate_form')})]"/>
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('hr.view_employee_tree')}),
+                      (0, 0, {'view_mode': 'form', 'view_id': ref('visa_process.view_employee_form_inherit')})]"/>
         <field name="domain">[('client_id', '=', active_id)]</field>
     </record>
 

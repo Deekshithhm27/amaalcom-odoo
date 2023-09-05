@@ -13,37 +13,36 @@
     'category': 'Generic Modules/Human Resources',
     'version': '1.0',
     'license': 'OPL-1',
-    'depends': ['base','mail','hr','product','contacts','hr_skills','web'],
+    'depends': ['base','mail','hr','product','contacts','web'],
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
         'data/sequences.xml',
-        # uncomment later
         'security/ir_rule.xml',
-        'views/salary_structure_views.xml',
-        'views/visa_candidate_views.xml',
-        'views/employment_duration_views.xml',
-        'views/visa_candidate_documents_views.xml',
-        'views/service_request_type_views.xml',
-        'views/ev_service_request_type_views.xml',
-        'views/lt_service_request_type_views.xml',
-        # 'views/service_request_approval_views.xml',
-        'views/service_request_views.xml',
-        'views/local_transfer_views.xml',
-        'views/employment_visa_views.xml',
-        'views/service_enquiry_views.xml',
-        'views/smart_buttons_views.xml',
-        'views/res_partner_views.xml',
-        'views/res_bank_views.xml',
-        'views/res_partner_phonecode_views.xml',
-        'views/visa_ref_documents_views.xml',
-        'views/letter_print_type_views.xml',
-        'views/menu.xml',
-        # 'views/assets.xml'
 
-        # 'report/visit_visa.xml',
-        # 'report/embassy_visit_visa.xml',
-        # 'report/business_visa.xml',
+        'views/configurations/employment_duration_views.xml',
+        'views/configurations/letter_print_type_views.xml',
+        'views/configurations/res_partner_phonecode_views.xml',
+        'views/configurations/salary_structure_views.xml',
+        'views/configurations/service_pricing_views.xml',
+        'views/configurations/visa_ref_documents_views.xml',
+        
+        'views/hr_employee_views.xml',
+        'views/res_bank_views.xml',
+        'views/res_users_views.xml',
+        
+        'views/employment_visa_views.xml',
+        'views/local_transfer_views.xml',
+        'views/smart_buttons_views.xml',
+        
+        'views/res_partner_views.xml',
+
+        'views/service_enquiry_views.xml',
+        
+        
+        
+        
+        'views/menu.xml',
     ],
     'demo': [
         # 'demo/visa_demo.xml',

@@ -6,13 +6,14 @@
         <field name="arch" type="xml">
             <form string="Candidate">
                 <sheet>
-                    <separator string="Candidate Information" groups="hr.group_hr_user"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <separator string="Candidate Information"/>
                     <div class="oe_title">
                         <h1>
                             <field name="sequence" readonly="1"/>
                         </h1>
                     </div>
-                    <group groups="hr.group_hr_user">
+                    <group groups="visa_process.group_service_request_client_spoc">
                         <group>
                            <field name="name"/>
                            <field name="email"/>
@@ -38,7 +39,9 @@
 							<field name="marital"/>
 							<field name="work_location_id"/>
 							<field name="client_id" readonly="1"/>
-							<field name="company_id" invisible="1"/>
+							<field name="user_id" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="active" invisible="1"/>
                         </group>
                     </group>
                     <notebook>
@@ -102,35 +105,29 @@
             </tree>
         </field>
     </record>
-    <!-- <record id="view_visa_filter" model="ir.ui.view">
-        <field name="name">visa.list.select</field>
+
+    <record id="visa_candidate_filter" model="ir.ui.view">
+        <field name="name">visa.candidate.tree</field>
         <field name="model">visa.candidate</field>
         <field name="arch" type="xml">
             <search string="Filter">
-                <field name="name" filter_domain="['|',('name','ilike',self),('visa_ref','ilike',self)]"
-                       string="Visa"/>
-                <filter name="in_progress" string="In Progress" domain="[('state','=',('inprogress'))]" help="Visa that has sent for process." />
-                <filter name="approve" string="Approved" domain="[('state','=',('validate1'))]" help="Visa that has been approved." />
-                <filter name="confirm" string="Confirm" domain="[('state','=',('confirm'))]" help="Visa that has been waiting for approval of Manager." />
-                <filter name="issue" string="Issued" domain="[('state','=',('received'))]" help="Visa that has been refused" />
-                <filter name="refuse" string="Refuse" domain="[('state','=',('refused'))]" help="Visa that has been refused" />
+                <field name="name" string="Candidate"/>
+                <field name="nationality_id" string="Nationality"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
                 <group expand="0" string="Group By...">
-                    <filter name="group_employee" string="Employee" context="{'group_by':'employee_id'}"/>
-                    <filter name="group_reason_of_visa" string="Reason of Visa" context="{'group_by':'reason_of_visa'}"/>
-                    <filter name="group_type" string="Type" context="{'group_by':'ticket_type'}"/>
-                    <filter name="group_department" string="Department" context="{'group_by':'department_id'}"/>
-                    <filter name="group_state" string="State" context="{'group_by':'state'}"/>
-                    <filter name="group_company" string="Company" context="{'group_by':'company_id'}"
-                            groups="base.group_multi_company"/>
+                    <filter name="group_candidate" string="Candidate" context="{'group_by':'name'}"/>
+                    <filter name="group_nationality" string="Nationality" context="{'group_by':'nationality_id'}"/>
                 </group>
             </search>
         </field>
-    </record> -->
+    </record>
 
     <record id="action_visa_candidate" model="ir.actions.act_window">
         <field name="name">Candidate</field>
         <field name="res_model">visa.candidate</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="visa_candidate_filter"/>
     </record>
 
 

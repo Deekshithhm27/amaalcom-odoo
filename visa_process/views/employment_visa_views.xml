@@ -13,6 +13,7 @@
                     <button name="action_cancel" string="Cancel" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'in',('draft','cancel','waiting'))]}"/>
                 </header>
                 <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <separator string="Employment Visa Information" groups="hr.group_hr_user"/>
                     <div class="oe_title">
                         <h1>
@@ -21,14 +22,13 @@
                     </div>
                     <group>
                         <group>
-                            <field name="service_request_type_id" invisible="1"/>
-                            <field name="candidate_id"/>
-                            <field name="dob"/>
-                            <field name="nationality_id" options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="employee_id"/>
+                            <field name="birthday"/>
+                            <field name="country_id" options="{'no_create': True, 'no_edit': True}"/>
                             <field name="marital"/>
                         </group>
                         <group>
-                        	<field name="email"/>
+                        	<field name="private_email"/>
                             <label for="contact_no"/>
                         	<div>
                                 <field name="phone_code_id" style="width: 120px" options="{'no_create': True, 'no_edit': True}"/>
@@ -42,6 +42,8 @@
                             	<field name="current_contact" style="width: 150px"/>
                             </div>
 							<field name="client_id" readonly="1"/>
+                            <field name="user_id" invisible="1"/>
+                            <field name="active" invisible="1"/>
 							<field name="company_id" invisible="1"/>
                             <field name="approver_id" attrs="{'invisible': [('approver_id', '=',False)],'readonly':[('approver_id','!=',False)]}"/>
                         </group>
@@ -86,7 +88,7 @@
 	                			<group>
 		                        	<field name="visa_profession"/>
 		                        	<field name="visa_religion"/>
-		                        	<field name="visa_nationality_id"/>
+		                        	<field name="visa_country_id"/>
 		                        	<field name="visa_stamping_city_id"/>
 		                        </group>
 		                        <group>
@@ -160,24 +162,6 @@
                                     <field name="other_doc_4" string=""/>
                                 </group>
                 			</group>
-                    		<!-- <field mode="tree" nolabel="1" name="document_line_ids">
-                                <form>
-                                    <group>
-                                        <group>
-                                            <field name="service_request_id" invisible="1"/>
-                                            <field name="name"/>
-                                            <field name="document_availability"/>
-                                            <field name="document_file" attrs="{'readonly': [('document_availability', '=',False)]}"/>
-                                        </group>
-                                    </group>
-                                </form>
-                                <tree editable="bottom">
-                                    <field name="service_request_id" invisible="1"/>
-                                    <field name="name"/>
-                                    <field name="document_availability"/>
-                                    <field name="document_file"/>
-                                </tree>
-                            </field> -->
                     
                 		</page>
                 		
@@ -214,7 +198,7 @@
         <field name="arch" type="xml">
             <tree string="Employment Visa" decoration-danger="state == 'reject'" decoration-muted="state == 'cancel'" decoration-success="state == 'approved'" decoration-primary="state == 'waiting'">
                 <field name="name"/>
-                <field name="candidate_id"/>
+                <field name="employee_id"/>
                 <field name="client_id"/>
                 <field name="designation"/>
                 <field name="doj"/>
@@ -228,11 +212,16 @@
         <field name="model">employment.visa</field>
         <field name="arch" type="xml">
             <search string="Filter">
-                <field name="candidate_id" string="Candidate"/>
+                <field name="employee_id" string="Employee"/>
                 <field name="client_id" string="Client"/>
+                <field name="country_id" string="Nationality"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
                 <group expand="0" string="Group By...">
-                    <filter name="group_candidate" string="Candidate" context="{'group_by':'candidate_id'}"/>
+                    <filter name="group_employee" string="Employee" context="{'group_by':'employee_id'}"/>
                     <filter name="group_client_id" string="Client" context="{'group_by':'client_id'}"/>
+                    <filter name="group_nationality" string="Nationality" context="{'group_by':'country_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by':'state'}"/>
                 </group>
             </search>
         </field>
@@ -243,5 +232,6 @@
         <field name="name">Employment Visa</field>
         <field name="res_model">employment.visa</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="employment_visa_filter"/>
     </record>
 </odoo>
