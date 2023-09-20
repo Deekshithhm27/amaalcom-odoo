@@ -780,7 +780,7 @@
                         </page>
                     </notebook>
                     
-                    <notebook groups="visa_process.group_service_request_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_administrator,visa_process.group_service_request_client_spoc" attrs="{'invisible':[('self_pay','=',True)]}">
+                    <notebook groups="visa_process.group_service_request_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_administrator" attrs="{'invisible':[('self_pay','=',True)]}">
                         <page string="Service Pricing">
                             <field name="service_enquiry_pricing_ids">
                                 <tree editable="bottom">
