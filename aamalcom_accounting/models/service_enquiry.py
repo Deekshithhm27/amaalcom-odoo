@@ -30,11 +30,41 @@ class ServiceEnquiry(models.Model):
         }
         payment_approval_id = self.env['account.payment.approval'].sudo().create(vals)
 
-    payments_count = fields.Integer(compute='_compute_payments_count')
+    draft_invoices_count = fields.Integer(string="Invoices",compute='_compute_payments_count')
+
 
     def _compute_payments_count(self):
         for line in self:
-            payment_id = self.env['account.payment.approval'].search([('service_enquiry_id', '=', line.id)])
-            line.payments_count = len(payment_id)
+            invoice_id = self.env['draft.account.move'].search([('service_enquiry_id', '=', line.id)])
+            line.draft_invoices_count = len(invoice_id)
+
+
+
+    def action_process_complete(self):
+        existing_invoice = self.env['draft.account.move'].search([
+            ('service_enquiry_id', '=', self.id)], limit=1)
+        if existing_invoice:
+            raise ValidationError(_('Invoice is already created for this Service Request'))
+        for record in self:
+            if record.billable_to_client == True: 
+
+                # Create draft.account.move record
+                account_move = self.env['draft.account.move'].create({
+                    'client_id': self.client_id.id,
+                    'parent_client_id':self.client_id.parent_id.id,
+                    'service_enquiry_id': self.id,
+                    'move_type':'service_ticket',
+                })
+
+                account_move_line = self.env['draft.account.move.line'].create({
+                    'move_id': account_move.id,
+                    'employee_id': record.employee_id.id,
+                    'price_unit': record.total_amount,
+                    'quantity':1,
+                    'name':f"{record.employee_id.sequence} - {record.service_request_config_id.name}"
+                })
+
+        return super(ServiceEnquiry, self).action_process_complete()
+
 
         

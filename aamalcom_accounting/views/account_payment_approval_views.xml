@@ -84,9 +84,7 @@
         <field name="search_view_id" ref="view_payment_account_approval_filter"/>
     </record>
 
-    <menuitem id="menu_base_payment_approval" name="Payments" parent="visa_process.menu_base_visa_process" sequence="4" groups="aamalcom_accounting.group_payment_approval_manager,aamalcom_accounting.group_payment_approval_administrator">
-    	<menuitem id="menu_payment_approval" name="Payments for Approval" action="action_payment_account_approval" sequence="1" groups="aamalcom_accounting.group_payment_approval_manager,aamalcom_accounting.group_payment_approval_administrator"/>
-    </menuitem>
+    
 
     <record  model="ir.actions.act_window" id="payment_approval_form_action_view">
         <field name="name">Payments for Approval</field>

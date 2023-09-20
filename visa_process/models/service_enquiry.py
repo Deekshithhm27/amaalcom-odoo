@@ -38,17 +38,25 @@ class ServiceEnquiry(models.Model):
         related="company_id.currency_id",help="The payment's currency.")
     
     client_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id)
+
+    # below values are updated on change of service request
     approver_id = fields.Many2one('hr.employee',string="Approver")
     approver_user_id = fields.Many2one('res.users',string="Approver User Id")
     
     state = fields.Selection([
         ('draft', 'Draft'),
         ('submitted','Ticket Submitted'),
+        ('waiting_op_approval','Waiting OH Approval'),
+        ('waiting_gm_approval','Waiting GM Approval'),
+        ('waiting_fin_approval','Waiting FM Approval'),
+        ('approved','Approved'),
         ('payment_initiation','Payment Initiation'),
         ('payment_done','Payment Confirmation'),
         ('done', 'Done'),('refuse','Refuse'),('cancel','Cancel')], string='State',default="draft",copy=False,tracking=True)
-    service_request = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request",default='lt_request',tracking=True)
-    ev_service_request_type = fields.Selection([('new_ev','Issuance of New EV'),
+    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",default='lt_request',tracking=True)
+    service_request_config_id = fields.Many2one('service.request.config',string="Service Request",domain="[('service_request_type','=',service_request_type)]")
+
+    service_request = fields.Selection([('new_ev','Issuance of New EV'),
         ('sec','SEC Letter'),('hr_card','Issuance for HR card'),
         ('ins_class_upgrade','Medical health insurance Class Upgrade'),
         ('iqama_no_generation','Iqama No generation'),('iqama_card_req','New Physical Iqama Card Request'),
@@ -66,38 +74,17 @@ class ServiceEnquiry(models.Model):
         ('sce_letter','SCE Letter'),('bilingual_salary_certificate','Bilingual Salary Certificate'),('contract_letter','Contract Letter'),
         ('bank_account_opening_letter','Bank account Opening Letter'),('bank_limit_upgrading_letter','Bank Limit upgrading Letter'),
         ('final_exit_issuance','Final exit Issuance'),
-        ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Requests")
-    lt_service_request_type = fields.Selection([('hr_card','Issuance for HR card'),
-        ('ins_class_upgrade','Medical health insurance Class Upgrade'),
-        ('iqama_no_generation','Iqama No generation'),('iqama_card_req','New Physical Iqama Card Request'),
-        ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),('exit_reentry_issuance','Exit Rentry issuance'),
-        ('prof_change_qiwa','Profession change Request In qiwa'),('salary_certificate','Salary certificate'),
-        ('bank_letter','Bank letter'),('vehicle_lease','Letter for Vehicle Lease'),('apartment_lease','Letter for Apartment Lease'),
-        ('istiqdam_form','Istiqdam Form(Family Visa Letter)'),('family_visa_letter','Family Visa Letter'),('employment_contract','Employment contract'),
-        ('cultural_letter','Cultural Letter/Bonafide Letter'),
-        ('family_visit_visa','Family Visit Visa'),
-        ('emp_secondment_or_cub_contra_ltr','Employee secondment / Subcontract letter'),
-        ('car_loan','Car Loan Letter'),('bank_loan','Bank Loan Letter'),('rental_agreement','Rental Agreement Letter'),
-        ('exception_letter','Exception Letter'),('attestation_waiver_letter','Attestation Waiver Letter'),
-        ('embassy_letter','Embassy Letters- as Per Respective Embassy requirement'),('istiqdam_letter','Istiqdam Letter'),
-        ('sce_letter','SCE Letter'),('bilingual_salary_certificate','Bilingual Salary Certificate'),('contract_letter','Contract Letter'),
-        ('bank_account_opening_letter','Bank account Opening Letter'),('bank_limit_upgrading_letter','Bank Limit upgrading Letter'),
-        ('final_exit_issuance','Final exit Issuance'),
-        ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Requests")
+        ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Requests",related="service_request_config_id.service_request",store=True)
     
-    employee_id = fields.Many2one('hr.employee',domain="[('employee_type', '=', 'external'),('client_id','=',client_id)]",string="Employee",store=True,tracking=True)
+    employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('client_id','=',user_id)]",string="Employee",store=True,tracking=True,required=True)
     
     emp_visa_id = fields.Many2one('employment.visa',string="Service Id",tracking=True)
 
-    @api.onchange('emp_visa_id')
-    def update_employee_id(self):
-        for line in self:
-            line.employee_id = line.emp_visa_id.employee_id
+    
 
 
 
     # LT Fields
-    confirmation_on_fees_paid = fields.Binary(string="Confirmation on fees paid LTI")
     bank_id = fields.Many2one('res.bank',string="Bank")
     purpose = fields.Text(string="Purpose?")
     letter_print_type_id = fields.Many2many('letter.print.type',string="Type")
@@ -112,7 +99,7 @@ class ServiceEnquiry(models.Model):
     medical_doc = fields.Binary(string="Medical Doc")
 
     upload_hr_card = fields.Binary(string="HR Card Document")
-    upload_payment_doc = fields.Binary(string="Payment Confirmation Document")
+    upload_payment_doc = fields.Binary(string="Payment Confirmation Document",tracking=True)
     residance_doc = fields.Binary(string="Residance Permit Document")
     muqeem_print_doc = fields.Binary(string="Muqeem Print Document")
 
@@ -175,14 +162,6 @@ class ServiceEnquiry(models.Model):
     agency_allocation = fields.Text(string="Allocation of Agency (E wakala)")
     coc_for_ewakala = fields.Boolean(string="COC for Ewakala",compute="update_coc_for_ewakala",store=True)
 
-    @api.depends('agency_allocation')
-    def update_coc_for_ewakala(self):
-        for line in self:
-            if line.agency_allocation:
-                line.coc_for_ewakala = True
-            else:
-                line.coc_for_ewakala = False
-
     upload_issuance_doc = fields.Binary(string="Upload Issuance of Visa Document")
     upload_enjaz_doc = fields.Binary(string="Enjaz Document")
     upload_sec_doc = fields.Binary(string="SEC Letter")
@@ -201,31 +180,22 @@ class ServiceEnquiry(models.Model):
     employment_duration = fields.Many2one('employment.duration',string="Duration",tracking=True)
     exit_type = fields.Selection([('single','Single'),('multiple','Multiple')],string="Type")
 
-    fees_to_be_paid = fields.Selection([('aamalcom','Aamalcom'),('client','Client')],string="Fees to be paid by")
-    fees_to_be_paid_by = fields.Selection([('aamalcom','Aamalcom'),('client','Client'),('employee','Employee')],string="Fees to be paid by")
+    
+    self_bill_string = fields.Char(string="Self Bill String", compute="_compute_self_bill_string")
     self_pay = fields.Boolean(string="Self")
+
+    aamalcom_pay_string = fields.Char(string="Aamalcom Pay String", compute="_compute_self_bill_string")
     aamalcom_pay = fields.Boolean(string="Aamalcom")
+
+    employee_pay_string = fields.Char(string="Employee Pay String")
     employee_pay = fields.Boolean(string="Employee")
 
-    @api.onchange('self_pay')
-    def update_fees_paid_by_self(self):
-        for line in self:
-            if line.self_pay == True:
-                line.aamalcom_pay = False
-                line.employee_pay = False
-    @api.onchange('aamalcom_pay')
-    def update_fees_paid_by_aamalcom(self):
-        for line in self:
-            if line.aamalcom_pay == True:
-                line.self_pay = False
-                line.employee_pay = False
-    @api.onchange('employee_pay')
-    def update_fees_paid_by_employee(self):
-        for line in self:
-            if line.employee_pay == True:
-                line.aamalcom_pay = False
-                line.self_pay = False
     self_bill = fields.Boolean(string="Self")
+    billable_to_client_string = fields.Char(string="Billable to Client",compute="_compute_self_bill_string")
+    billable_to_client = fields.Boolean(string="Billable to Client")
+
+    billable_to_aamalcom_string = fields.Char(string="Billable to Aamalcom",compute="_compute_self_bill_string")
+    billable_to_aamalcom = fields.Boolean(string="Billable to Aamalcom")
             
     to_be_issued_date = fields.Date(string="To be issued from")
 
@@ -320,6 +290,148 @@ class ServiceEnquiry(models.Model):
 
     total_amount = fields.Monetary(string="Total Amount" ,store=True, readonly=True, tracking=True,compute="_compute_amount")
 
+    
+    assign_govt_emp_one = fields.Boolean(string="Assign First Govt Employee")
+    assigned_govt_emp_one = fields.Boolean(string="Assigned First Govt Employee")
+    assign_govt_emp_two = fields.Boolean(string="Assign Second Govt Employee")
+    assigned_govt_emp_two = fields.Boolean(string="Assigned Second Govt Employee")
+    first_govt_employee_id = fields.Many2one('hr.employee',string="1st Government Employee",tracking=True)
+    second_govt_employee_id = fields.Many2one('hr.employee',string="2nd Government Employee",tracking=True)
+
+    current_department_ids = fields.Many2many('hr.department','service_enquiry_dept_ids',string="Department",compute="update_departments")
+
+    req_completion_date = fields.Datetime(string="Request Completion Date")
+
+    # below fields are to track the approvers
+
+    op_approver_id = fields.Many2one('hr.employee',string="Approved Operation Manager")
+    gm_approver_id = fields.Many2one('hr.employee',string="Approved General Manager")
+    fin_approver_id = fields.Many2one('hr.employee',string="Approved Finance Manager")
+
+    request_note = fields.Text(string="Request Query")  
+
+    doc_uploaded = fields.Boolean(string="Document uploaded",default=False)
+    final_doc_uploaded = fields.Boolean(string="Final Document uploaded",default=False)
+    total_treasury_requests = fields.Integer(string="Request Details",compute="_compute_total_treasury_requests")
+
+    @api.onchange('emp_visa_id')
+    def update_employee_id(self):
+        for line in self:
+            line.employee_id = line.emp_visa_id.employee_id
+
+    @api.depends('agency_allocation')
+    def update_coc_for_ewakala(self):
+        for line in self:
+            if line.agency_allocation:
+                line.coc_for_ewakala = True
+            else:
+                line.coc_for_ewakala = False
+    
+
+    @api.onchange('self_pay')
+    def update_fees_paid_by_self(self):
+        for line in self:
+            if line.self_pay == True:
+                line.aamalcom_pay = False
+                line.employee_pay = False
+    @api.onchange('aamalcom_pay')
+    def update_fees_paid_by_aamalcom(self):
+        for line in self:
+            if line.aamalcom_pay == True:
+                line.self_pay = False
+                line.employee_pay = False
+    @api.onchange('employee_pay')
+    def update_fees_paid_by_employee(self):
+        for line in self:
+            if line.employee_pay == True:
+                line.aamalcom_pay = False
+                line.self_pay = False
+    
+    
+    @api.depends('client_id')
+    def _compute_self_bill_string(self):
+        for record in self:
+            if record.client_id:
+                record.self_bill_string = f"{record.client_id.parent_id.name}"
+                record.billable_to_client_string = f"{record.client_id.parent_id.name}"
+                record.billable_to_aamalcom_string = "Aamalcom"
+                record.aamalcom_pay_string = "Aamalcom"
+                record.employee_pay_string = f"{record.employee_id.name}"
+            else:
+                record.self_bill_string = False
+                record.billable_to_client_string = False
+                record.billable_to_aamalcom_string = False
+                record.aamalcom_pay_string = False
+                record.employee_pay_string = False
+
+    @api.depends('state','service_request_config_id')
+    def update_departments(self):
+        for line in self:
+            department_ids = []
+            if line.service_request_config_id.service_department_lines:
+                if not line.service_request_config_id.service_request == 'iqama_card_req':
+                    line.current_department_ids = False
+                    for lines in line.service_request_config_id.service_department_lines:
+                        if line.state in ('submitted','waiting_gm_approval','waiting_op_approval','waiting_fin_approval'):
+                            if lines.sequence == 1:
+                                # line.current_department_id = lines.department_id.id
+                                department_ids.append((4,lines.department_id.id))
+                                line.current_department_ids = department_ids
+                                break
+                            else:
+                                line.current_department_ids = False
+                        elif line.state in ('payment_done','approved'):
+                            if lines.sequence == 2:
+                                # line.current_department_id = lines.department_id.id
+                                department_ids.append((4,lines.department_id.id))
+                                line.current_department_ids = department_ids
+                                break
+                            else:
+                                line.current_department_ids = False
+                        else:
+                            line.current_department_ids = False
+                else:
+                    
+                    for lines in line.service_request_config_id.service_department_lines:
+                        department_ids.append((4,lines.department_id.id))
+                    line.current_department_ids = department_ids
+                    break
+            else:
+                line.current_department_ids = False
+
+
+
+    def open_assign_employee_wizard(self):
+        for line in self:
+            treasury_id = self.env['service.request.treasury'].search([('service_request_id','=',line.id)])
+            if treasury_id:
+                for srt in treasury_id:
+                    if srt.state != 'done':
+                        raise ValidationError(_('Action required by Finance team. Kindly upload Confirmation Document provided by Treasury Department before continuing further'))
+
+            department_ids = [(6, 0, self.current_department_ids.ids)]
+
+            return {
+                'name': 'Select Employee',
+                'type': 'ir.actions.act_window',
+                'res_model': 'employee.selection.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {'default_department_ids': department_ids},
+            }
+
+    def open_reassign_employee_wizard(self):
+        department_ids = [(6, 0, self.current_department_ids.ids)]
+        return {
+                'name': 'Select Employee',
+                'type': 'ir.actions.act_window',
+                'res_model': 'employee.selection.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {'default_department_ids': department_ids},
+            }
+
+
     @api.depends('service_enquiry_pricing_ids.amount')
     def _compute_amount(self):
         total_amount = 0.0
@@ -330,13 +442,24 @@ class ServiceEnquiry(models.Model):
             line.total_amount = total_amount    
 
 
-    # LT fields
+    def update_pricing(self):
+        for record in self:
+            pricing_id = self.env['service.pricing'].search([('service_request_type', '=', record.service_request_type),
+                    ('service_request', '=', record.service_request)], limit=1)
+            if record.aamalcom_pay:
+                if pricing_id:
+                    for p_line in pricing_id.pricing_line_ids:
+                        if p_line.duration_id == record.employment_duration:
+                            record.service_enquiry_pricing_ids.create({
+                                'service_enquiry_id':record.id,
+                                'service_pricing_id':pricing_id.id,
+                                'service_pricing_line_id':p_line.id,
+                                'amount':p_line.id
+                                })
+                else:
+                    raise ValidationError(_('Service Pricing is not configured properly. Kindly contact your Accounts Manager'))
+           
 
-    # common fields
-
-    
-
-    request_note = fields.Text(string="Request Query")  
 
     # LT Issuance of HR Card and Iqama renewal start
 
@@ -344,17 +467,57 @@ class ServiceEnquiry(models.Model):
         for line in self:
             line.state = 'submitted'
             line.doc_uploaded = False
+            if line.service_request:
+                line.assign_govt_emp_one = True
+            self.update_pricing()
             self._add_followers()
 
     def action_require_payment_confirmation(self):
         for line in self:
             line.state = 'payment_initiation'
             line.doc_uploaded = False
+    def action_submit_for_approval(self):
+        for line in self:
+            line.state = 'waiting_op_approval'
+    def action_op_approved(self):
+        current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
+
+        for line in self:
+            line.state = 'waiting_gm_approval'
+            line.op_approver_id = current_employee
+    def action_gm_approved(self):
+        current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
+        for line in self:
+            line.state = 'waiting_fin_approval'
+            line.gm_approver_id = current_employee
+
+    def action_finance_approved(self):
+        current_employee = self.env.user.employee_ids and self.env.user.employee_ids[0]
+        for line in self:
+            vals = {
+            'service_request_id': self.id,
+            'client_id': self.client_id.id,
+            'employee_id':self.employee_id.id,
+            'employment_duration':self.employment_duration.id,
+            'total_amount':self.total_amount
+            }
+            service_request_treasury_id = self.env['service.request.treasury'].sudo().create(vals)
+
+            if service_request_treasury_id:
+                line.state = 'approved'
+                line.fin_approver_id = current_employee
+                if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal':
+                    line.assign_govt_emp_two = True
+
 
     def action_submit_payment_confirmation(self):
         for line in self:
             line.state = 'payment_done'
             line.doc_uploaded = False
+            if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal':
+                line.assign_govt_emp_two = True
+            if line.service_request == 'prof_change_qiwa':
+                line.doc_uploaded = True
 
     
 
@@ -367,33 +530,52 @@ class ServiceEnquiry(models.Model):
     def action_submit_initiate(self):
         for line in self:
             line.state = 'submitted'
+            if line.service_request:
+                line.assign_govt_emp_one = True
+
             self._add_followers()
 
     def action_process_complete(self):
         for line in self:
-            line.state = 'done'
+            if line.service_request == 'prof_change_qiwa':
+                treasury_id = self.env['service.request.treasury'].search([('service_request_id','=',line.id)])
+                if treasury_id:
+                    for srt in treasury_id:
+                        if srt.state != 'done':
+                            raise ValidationError(_('Action required by Finance team. Kindly upload Confirmation Document provided by Treasury Department before continuing further'))
+                else:
+                    line.state = 'done'
+                    line.req_completion_date = fields.Datetime.now()
 
-    
+
+            else:
+                line.state = 'done'
+                line.req_completion_date = fields.Datetime.now()
 
     # LT Medical Health Insurance Upload end
 
-    @api.onchange('service_request')
-    def update_service_request(self):
+    @api.onchange('service_request_type')
+    def update_service_request_type(self):
         for line in self:
             if line.state == 'draft':
-                if line.service_request == 'ev_request':
-                    line.lt_service_request_type = False
-                if line.service_request == 'lt_request':
-                    line.ev_service_request_type = False
+                if line.service_request_type == 'ev_request':
+                    line.service_request_config_id = False
+                if line.service_request_type == 'lt_request':
+                    line.service_request_config_id = False
 
-    @api.depends('lt_service_request_type','ev_service_request_type')
+    @api.depends('service_request')
     def auto_fill_istiqdam_form(self):
         for line in self:
-            if line.lt_service_request_type == 'istiqdam_form' or line.ev_service_request_type == 'istiqdam_form':
+            if line.service_request == 'istiqdam_form':
                 istiqdam_id = self.env['visa.ref.documents'].search([('is_istiqdam_doc','=',True)],limit=1)
                 line.draft_istiqdam = istiqdam_id.istiqdam_doc
             else:
                 line.draft_istiqdam = False
+    @api.onchange('employee_id')
+    def update_employee_string(self):
+        for line in self:
+            if line.employee_id:
+                line.employee_pay_string = f"{line.employee_id.name}"
 
     def action_confirm(self):
         for line in self:
@@ -409,10 +591,10 @@ class ServiceEnquiry(models.Model):
 
     # New Physical Iqama Card Request(cost 1,000sar) start
 
-    def action_iqama_submit(self):
-        for line in self:
-            line.state = 'submitted'
-            self._add_followers()
+    # def action_iqama_submit(self):
+    #     for line in self:
+    #         line.state = 'submitted'
+    #         self._add_followers()
 
     def action_iqama_payment_received_confirmation(self):
         for line in self:
@@ -455,8 +637,7 @@ class ServiceEnquiry(models.Model):
         self.message_subscribe(partner_ids=partner_ids)
 
 
-    doc_uploaded = fields.Boolean(string="Document uploaded",default=False)
-    final_doc_uploaded = fields.Boolean(string="Final Document uploaded",default=False)
+    
     @api.onchange('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
         'upload_gosi_doc','upload_hr_card','upload_confirmation_of_exit_reentry','upload_exit_reentry_visa','profession_change_doc',
         'upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','upload_vehicle_lease_doc',
@@ -488,12 +669,18 @@ class ServiceEnquiry(models.Model):
             else:
                 line.final_doc_uploaded = False
 
-    @api.onchange('ev_service_request_type','lt_service_request_type')
+    @api.onchange('service_request')
     def update_doc_updated(self):
         for line in self:
             line.doc_uploaded = False
             self.approver_id = self.client_id.company_spoc_id.id 
             self.approver_user_id = self.approver_id.user_id.id
+
+    
+    def _compute_total_treasury_requests(self):
+        for line in self:
+            employee_id = self.env['service.request.treasury'].search([('service_request_id', '=', line.id)])
+            line.total_treasury_requests = len(employee_id)
 
 
 

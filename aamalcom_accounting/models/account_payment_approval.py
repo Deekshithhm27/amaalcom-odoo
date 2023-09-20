@@ -25,7 +25,7 @@ class AccountPaymentApproval(models.Model):
     amount = fields.Monetary(string="Total Amount",currency_field='currency_id',readonly=True)
 
     client_id = fields.Many2one('res.partner',string="Client",readonly=True)
-    employee_id = fields.Many2one('hr.employee',domain="[('employee_type', '=', 'external')]",string="Employee",readonly=True)
+    employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external')]",string="Employee",readonly=True)
 
     state = fields.Selection([('draft','Draft'),('waiting','Waiting for Approval'),('approved','Approved'),
         ('cancel','Cancel'),('reject','Reject')],default="draft",string="Status",tracking=True)

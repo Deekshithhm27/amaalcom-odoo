@@ -28,7 +28,7 @@ class HrEmployee(models.Model):
 
     religion = fields.Selection([('muslim','Muslim'),('non_muslim','Non-Muslim'),('others','Others')],string="Religion")
 
-    client_id = fields.Many2one('res.partner',string="Client")
+    client_id = fields.Many2one('res.users',string="Client")
 
     iqama_certificate = fields.Binary(string="Iqama")
     degree_certificate = fields.Binary(string="Degree")
@@ -49,15 +49,26 @@ class HrEmployee(models.Model):
     iqama = fields.Char(string="Designation on Iqama")
 
     # This field is to differentiate between internal and external (client) employees
-    employee_type = fields.Selection([('external','External'),('internal','Internal')],string="Type of user to set System Access",default=lambda self: self.env.user.user_type)
+    custom_employee_type = fields.Selection([('external','External'),('internal','Internal')],string="Type of user to set System Access",default=lambda self: self.env.user.user_type)
+    # below field was overrided from standard and added group
+    barcode = fields.Char(string="Badge ID", help="ID used for employee identification.", groups="hr.group_hr_user,visa_process.group_hr_employee,visa_process.group_hr_client", copy=False)
 
 
     @api.model
     def create(self, vals):
+        if vals.get('client_id'):
+            sequence_code = 'seq_client_employee'
+        else:
+            sequence_code = 'seq_aamalcom_employee'
+
         vals['sequence'] = self.env['ir.sequence'].next_by_code('hr.employee')
         if vals.get('user_id'):
             user = self.env['res.users'].browse(vals['user_id'])
-            vals['employee_type'] = user.user_type
+            vals['custom_employee_type'] = user.user_type
+
+        user = self.env.user
+        if user.partner_id.is_client:
+            vals['client_id'] = user.id
 
 
         employee = super(HrEmployee, self).create(vals)

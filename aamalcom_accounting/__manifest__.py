@@ -17,11 +17,14 @@
     	'security/security.xml',
         'security/ir.model.access.csv',
     	'data/sequences.xml',
+        'views/draft_account_move_views.xml',
         'views/account_payment_approval_views.xml',
         'views/account_payment_views.xml',
         'views/service_enquiry_views.xml',
         'views/account_move_views.xml',
-        'views/menu_hide_views.xml'
+        'wizard/batch_invoice_creation_wizard_views.xml',
+        'views/menu_hide_views.xml',
+        'views/menu.xml'
 
     ],
     'demo': [

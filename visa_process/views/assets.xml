@@ -16,6 +16,7 @@
         <template id="assets_backend" inherit_id="web.assets_backend">
             <xpath expr="." position="inside">
                 <script type="text/javascript" src="/visa_process/static/src/js/document_preview.js"></script>
+                <script type="text/javascript" src="/visa_process/static/src/js/bool_partner_name.js"></script>
                 <template>
                     <asset name="web.assets_qweb" inherit_id="web.assets_qweb" mode="extension"/>
                     <asset name="my_module_assets" type="xml">

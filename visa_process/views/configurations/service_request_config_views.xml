@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="service_pricing_form" model="ir.ui.view">
-        <field name="name">Service Pricing</field>
-        <field name="model">service.pricing</field>
+    <record id="service_request_config_form" model="ir.ui.view">
+        <field name="name">Service Request</field>
+        <field name="model">service.request.config</field>
         <field name="arch" type="xml">
-            <form string="Service Pricing">
+            <form string="Service Request">
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <div class="oe_title mb24">
@@ -18,33 +18,34 @@
                         </h1>
                         <div class="o_row">
                             <group>
-                                <field name="service_request_config_id"/>
-                                <field name="service_request" invisible="1"/>
+                                <field name="service_request" widget="selection"/>
+                            </group>
+                            <group>
+                            	<field name="sequence"/>
                             </group>
                         </div>
                     </div>
                     <notebook>
-                		<page string="Pricing Lines">
-                			<field name="pricing_line_ids">
+                		<page string="Departments">
+                			<field name="service_department_lines">
                 				<form>
                 					<group>
                 						<group>
                 							<field name="company_id" invisible="1"/>
-                							<field name="currency_id" invisible="1"/>
-                							<field name="pricing_id" invisible="1"/>
-		                					<field name="duration_id"/>
-		                					<field name="amount"/>
-		                					<field name="remarks"/>
+                							<field name="user_id" invisible="1"/>
+                							<field name="name"/>
+		                					<field name="department_id"/>
+		                					<field name="sequence"/>
                 						</group>
                 					</group>
                 				</form>
                 				<tree editable="bottom">
                 					<field name="company_id" invisible="1"/>
-                					<field name="currency_id" invisible="1"/>
-                					<field name="pricing_id" invisible="1"/>
-                					<field name="duration_id"/>
-                					<field name="amount"/>
-                					<field name="remarks"/>
+        							<field name="user_id" invisible="1"/>
+                					<field name="sequence" widget="handle"/>
+                					<field name="name" invisible="1"/>
+                					<field name="department_id"/>
+                					
                 				</tree>
                 				
                 			</field>
@@ -61,23 +62,24 @@
             </form>
         </field>
     </record>
-    <record id="service_pricing_tree" model="ir.ui.view">
-        <field name="name">Service Pricing</field>
-        <field name="model">service.pricing</field>
+    <record id="service_request_config_tree" model="ir.ui.view">
+        <field name="name">Service Request</field>
+        <field name="model">service.request.config</field>
         <field name="arch" type="xml">
-            <tree string="Service Pricing">
-                <field name="service_request_type"/>
+            <tree string="Service Request">
+                <field name="sequence" widget="handle"/>
                 <field name="name"/>
+                <field name="service_request_type"/>
             </tree>
         </field>
     </record>
-    <record id="service_pricing_filter" model="ir.ui.view">
-        <field name="name">service.pricing.tree</field>
-        <field name="model">service.pricing</field>
+    <record id="service_request_config_filter" model="ir.ui.view">
+        <field name="name">service.request.config.tree</field>
+        <field name="model">service.request.config</field>
         <field name="arch" type="xml">
             <search string="Filter">
                 <field name="name" string="Name"/>
-                <field name="service_request_type" string="Request Type"/>
+                <field name="service_request" string="Request Type"/>
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
                 <group expand="0" string="Group By...">
@@ -88,10 +90,10 @@
     </record>
 
 
-    <record id="action_service_pricing" model="ir.actions.act_window">
-        <field name="name">Service Pricing</field>
-        <field name="res_model">service.pricing</field>
+    <record id="action_service_request_config" model="ir.actions.act_window">
+        <field name="name">Service Request</field>
+        <field name="res_model">service.request.config</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="service_pricing_filter"/>
+        <field name="search_view_id" ref="service_request_config_filter"/>
     </record>
 </odoo>

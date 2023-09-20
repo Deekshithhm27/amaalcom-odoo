@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-
-    <record id="group_custom_hide_menu" model="res.groups">
-        <field name="name">Hide Menu</field>
-        <field name="category_id" ref="base.module_category_hidden"/>
-    </record>
-</odoo>

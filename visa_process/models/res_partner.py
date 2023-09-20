@@ -14,13 +14,31 @@ class ResPartner(models.Model):
     client_code = fields.Char(string="Client Code")
     is_client = fields.Boolean(string='Is a client', default=False,
         help="Check if the contact is a client",store=True,compute="_check_type_of_partner")
+    total_employees = fields.Integer(compute='_compute_total_employees')
+    employment_visa_count = fields.Integer(compute='_compute_employment_visa_count')
+
+    company_spoc_id = fields.Many2one('hr.employee',string="Accounts Manager",tracking=True,compute="update_accounts_manager",store=True)
 
     # Overrided fields
     vat = fields.Char(string='VAT', index=True, help="The Tax Identification Number. Complete it if the contact is subjected to government taxes. Used in some legal statements.")
 
+    client_id = fields.Many2one('res.users',string="Client",compute="get_external_emp_client_id",store=True)
+
+    @api.depends('employee_ids')
+    def get_external_emp_client_id(self):
+        for line in self:
+            if line.employee_ids:
+                for lines in line.employee_ids:
+                    if lines.client_id:
+                        print("------------lineeeee",lines.client_id.login)
+                        line.client_id = lines.client_id.id
+                    else:
+                        line.client_id = False
+            else:
+                line.client_id = False
+
     @api.onchange('user_ids')
     def update_parent_id(self):
-        print("-------------------")
         for line in self:
             if line.user_ids:
                 for user in user_ids:
@@ -34,26 +52,32 @@ class ResPartner(models.Model):
                     if user.user_type == 'external':
                         line.is_client = True
                         line.parent_id = user.partner_company_id
+                        line.company_spoc_id = user.company_spoc_id
                     else:
                         line.is_client = False
                         line.parent_id = user.partner_company_id
             else:
                 line.is_client = False
 
+    @api.depends('user_ids')
+    def update_accounts_manager(self):
+        for line in self:
+            if line.user_ids:
+                for user in line.user_ids:
+                    if user.user_type == 'external':
+                        line.company_spoc_id = user.company_spoc_id
+                    else:
+                        line.company_spoc_id = False
+            else:
+                line.company_spoc_id = False
 
 
 
-    employees_count = fields.Integer(compute='_compute_employees_count')
-    employment_visa_count = fields.Integer(compute='_compute_employment_visa_count')
 
-    company_spoc_id = fields.Many2one('hr.employee',string="Accounts Manager",tracking=True)
-
-
-
-    def _compute_employees_count(self):
+    def _compute_total_employees(self):
         for line in self:
             employee_id = self.env['hr.employee'].search([('client_id', '=', line.id)])
-            line.employees_count = len(employee_id)
+            line.total_employees = len(employee_id)
 
     def _compute_employment_visa_count(self):
         for line in self:

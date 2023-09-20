@@ -38,7 +38,7 @@ class EmploymentVisa(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
     currency_id = fields.Many2one(related='company_id.currency_id', store=True, readonly=True)
 
-    employee_id = fields.Many2one('hr.employee',domain="[('employee_type', '=', 'external')]",string="Employee name(as per passport)",tracking=True,required=True)
+    employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external')]",string="Employee name(as per passport)",tracking=True,required=True)
     birthday = fields.Date(string="Date of Birth",tracking=True)
     contact_no = fields.Char(string="Contact # in the country",tracking=True)
     current_contact = fields.Char(string="Current Contact # (if Outside the country) *",tracking=True)

@@ -8,19 +8,13 @@ from dateutil.relativedelta import relativedelta
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
-class DraftInvoiceSequence(models.Model):
-    _name = 'draft.invoice.sequence'
-    _description = 'Draft Invoice Sequence'
-
-    sequence = fields.Integer(string='Next Sequence', default='00001')
-
-
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
  
-    draft_invoice_sequence_id = fields.Many2one('draft.invoice.sequence', string='Draft Invoice Sequence', readonly=True, copy=False)
-    draft_invoice_sequence = fields.Integer(related='draft_invoice_sequence_id.sequence', string='Draft Invoice Sequence Number', readonly=True, store=True)
+    
+    draft_invoice_sequence = fields.Char('Draft Invoice Number', copy=False, index=True)
+
     state = fields.Selection(selection=[('draft', 'Draft'),
             ('approval_needed', 'Waiting for Approval'),
             ('manager_approval', 'Waiting for Manager Approval'),
@@ -29,22 +23,30 @@ class AccountMove(models.Model):
             ('cancel', 'Cancelled')], string='Status', required=True, readonly=True, copy=False, tracking=True,
         default='draft')
 
-    @api.model
+    # @api.model
+    # def create(self, vals):
+    #     if vals.get('state') == 'draft':
+    #         sequence_id = self.env['draft.invoice.sequence'].search([], limit=1)
+    #         if sequence_id:
+    #             vals['draft_invoice_sequence_id'] = sequence_id.id
+    #             vals['name'] = 'DI/' + sequence_id.sequence.zfill(5)
+    #             sequence_id.sequence = str(int(sequence_id.sequence) + 1).zfill(5)
+    #     return super(AccountMove, self).create(vals)
+    # @api.model
     def create(self, vals):
-        if vals.get('state') == 'draft':
-            sequence_id = self.env['draft.invoice.sequence'].search([], limit=1)
-            if sequence_id:
-                vals['draft_invoice_sequence_id'] = sequence_id.id
-                vals['name'] = 'DI/' + sequence_id.sequence.zfill(5)
-                sequence_id.sequence = str(int(sequence_id.sequence) + 1).zfill(5)
+        print("---------bbbbbbb",vals.get('move_type'))
+        print("---------kjjjjjjjjjjjjjbbbbbbb",vals.get('state'))
+        # if vals.get('move_type') == 'out_invoice':
+        draft_invoice_sequence = self.env['ir.sequence'].next_by_code('account.move.draft.invoice')
+        vals['draft_invoice_sequence'] = draft_invoice_sequence
         return super(AccountMove, self).create(vals)
 
 
-    def unlink(self):
-        for invoice in self:
-            if invoice.state == 'draft' and invoice.draft_invoice_sequence_id:
-                invoice.draft_invoice_sequence_id.sequence = str(int(invoice.draft_invoice_sequence_id.sequence) - 1).zfill(5)
-        return super(AccountMove, self).unlink()
+    # def unlink(self):
+    #     for invoice in self:
+    #         if invoice.state == 'draft' and invoice.draft_invoice_sequence_id:
+    #             invoice.draft_invoice_sequence_id.sequence = str(int(invoice.draft_invoice_sequence_id.sequence) - 1).zfill(5)
+    #     return super(AccountMove, self).unlink()
 
     def action_submit_for_approval(self):
         for line in self:
@@ -63,3 +65,8 @@ class AccountMove(models.Model):
 
     
 
+class AccountMoveLine(models.Model):
+    _inherit = 'account.move.line'
+
+
+    employee_id = fields.Many2one('hr.employee',string="Employee")

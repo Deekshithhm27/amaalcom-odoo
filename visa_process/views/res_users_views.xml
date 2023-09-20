@@ -8,6 +8,7 @@
             <xpath expr="//div[hasclass('oe_title')]/group[1]/field[@name='partner_id']" position="after">
                 <field name="user_type"/>
                 <field name="partner_company_id" attrs="{'invisible': [('user_type', '=', False)],'required':[('user_type','=','external')]}"/>
+                <field name="company_spoc_id" attrs="{'invisible': ['|',('user_type', '=', 'internal'),('user_type','=',False)],'required':[('user_type','=','external')]}"/>
             </xpath>
         </field>
     </record>
