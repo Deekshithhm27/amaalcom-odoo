@@ -76,7 +76,8 @@
                                 attrs="{'invisible': ['|',('state','!=','payment_done'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','!=','iqama_card_req')]}" groups="visa_process.group_service_request_manager"/>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <div class="oe_title mb24" name="service_enquiry">
-                        <field name="service_request_type" widget="radio" nolabel="1" options="{'horizontal': true}"/>
+                        <field name="service_request_type" widget="radio" nolabel="1" options="{'horizontal': true}" invisible="1"/>
+                        <field name="process_type" widget="radio" nolabel="1" options="{'horizontal': true}" invisible="1"/>
                         <field name="company_id" invisible="1"/>
                         <field name="currency_id" invisible="1"/>
                         <field name="active" invisible="1"/>
@@ -92,6 +93,7 @@
                         </h1>
                         <div class="o_row">
                             <group>
+                                <field name="employee_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
                                 <field name="service_request_config_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
                                 <field name="service_request" invisible="1"/>
                                 <field name="assign_govt_emp_one" invisible="1"/>
@@ -105,7 +107,7 @@
                                 <field name="req_completion_date" invisible="1"/>
                             
                                 <field name="emp_visa_id" attrs="{'invisible': ['|',('service_request_type', '!=', 'ev_request'),('service_request', '!=', 'new_ev')],'readonly': [('state', '!=','draft')]}"/>
-                                <field name="employee_id" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                                
                             </group>
                         </div>
                     </div>
@@ -116,8 +118,6 @@
                     <group name="lt_hr_card" attrs="{'invisible': [('service_request', 'not in', ('hr_card','iqama_renewal'))]}">
                         <group>
                             <field name="profession_change" attrs="{'readonly': [('state', '!=','draft')],'invisible': [('service_request', '!=','prof_change_qiwa')]}"/>
-                        </group>
-                        <group>
                             <field name="employment_duration" attrs="{'readonly': [('state', '!=','draft')],'invisible': [('service_request', 'not in', ('hr_card','iqama_renewal'))]}"/>
                         </group>
                         <group attrs="{'invisible': [('service_request', '!=', 'hr_card')]}">
@@ -566,7 +566,7 @@
 
 
                     <!-- Updated -->
-                    <notebook attrs="{'invisible': ['|',('state', '=','draft'), ('first_govt_employee_id','=',False)]}">
+                    <notebook attrs="{'invisible': ['|',('state', '=','draft'),'|',('first_govt_employee_id','=',False),('service_request','in',('hr_card'))]}">
                         
                         <page string="Documents">
                             <group attrs="{'invisible': [('service_request', '!=', 'sec')]}" string="SEC Letter">
@@ -785,7 +785,8 @@
                             <field name="service_enquiry_pricing_ids">
                                 <tree editable="bottom">
                                     <field name="service_enquiry_id" invisible="1"/>
-                                    <field name="service_pricing_id" domain="[('service_request','=',parent.service_request),('service_request','=',parent.service_request)]"/>
+                                    <field name="name"/>
+                                    <field name="service_pricing_id" domain="[('service_request','=',parent.service_request),('service_request','=',parent.service_request)]" invisible="1"/>
                                     <field name="service_pricing_line_id" domain="[('pricing_id', '=',service_pricing_id)]"/>
                                     <field name="currency_id" invisible="1"/>
                                     <field name="amount" sum="Total"/>
@@ -795,6 +796,7 @@
                             <field name="total_amount" invisible="1"/>
                             
                         </page>
+
                     </notebook>
                     <!-- SEC Letter Stop-->
                         
@@ -805,6 +807,9 @@
                     <field name="request_note" placeholder="Query Details......"/>
                     <field name="note" readonly="1" attrs="{'invisible': [('service_request', 'not in',( 'iqama_card_req','prof_change_qiwa'))]}"/>
                     <field name="visit_visa_note" readonly="1" attrs="{'invisible': [('service_request', '!=','family_visit_visa')]}"/>
+                    <group>
+                        <field name="letter_cost"/>
+                    </group>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>

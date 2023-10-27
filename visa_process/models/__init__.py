@@ -6,7 +6,6 @@ from . import employment_duration
 from . import letter_print_type
 from . import res_partner_phonecode
 from . import service_request_config
-from . import salary_structure
 from . import service_pricing
 from . import visa_ref_documents
 
@@ -15,7 +14,6 @@ from . import visa_ref_documents
 from . import res_users
 from . import res_partner
 from . import hr_employee
-from . import salary_line
 from . import local_transfer
 from . import employment_visa
 from . import service_request_treasury

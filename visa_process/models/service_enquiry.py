@@ -15,20 +15,7 @@ class ServiceEnquiry(models.Model):
     _rec_name = 'name'
     _description = "Service Enquiry"
 
-    @api.model
-    def default_get(self,fields):
-        res = super(ServiceEnquiry,self).default_get(fields)
-        salary_lines = [(5,0,0)]
-        salary_ids = self.env['salary.structure'].search([])
-        for sal in salary_ids:
-            line = (0,0,{
-                'name':sal.id
-                })
-            salary_lines.append(line)
-        res.update({
-            'salary_line_ids':salary_lines
-            })
-        return res
+    
 
     name = fields.Char(string="Enquiry No")
     active = fields.Boolean('Active', default=True)
@@ -53,8 +40,16 @@ class ServiceEnquiry(models.Model):
         ('payment_initiation','Payment Initiation'),
         ('payment_done','Payment Confirmation'),
         ('done', 'Done'),('refuse','Refuse'),('cancel','Cancel')], string='State',default="draft",copy=False,tracking=True)
-    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",default='lt_request',tracking=True)
+    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",tracking=True)
     service_request_config_id = fields.Many2one('service.request.config',string="Service Request",domain="[('service_request_type','=',service_request_type)]")
+    process_type = fields.Selection([('automatic','Automatic'),('manual','Manual')],string="Process Type",default="manual")
+
+
+    @api.onchange('service_request_config_id')
+    def update_process_type(self):
+        for line in self:
+            if line.service_request_config_id:
+                line.process_type = line.service_request_config_id.process_type
 
     service_request = fields.Selection([('new_ev','Issuance of New EV'),
         ('sec','SEC Letter'),('hr_card','Issuance for HR card'),
@@ -77,10 +72,15 @@ class ServiceEnquiry(models.Model):
         ('dependent_transfer_query','Dependent Transfer Query'),('soa','Statement of account till date'),('general_query','General Query')],string="Requests",related="service_request_config_id.service_request",store=True)
     
     employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('client_id','=',user_id)]",string="Employee",store=True,tracking=True,required=True)
+
+    @api.onchange('employee_id')
+    def update_service_request_type_from_employee(self):
+        for line in self:
+            if line.employee_id:
+                line.service_request_type = line.employee_id.service_request_type
     
     emp_visa_id = fields.Many2one('employment.visa',string="Service Id",tracking=True)
 
-    
 
 
 
@@ -88,6 +88,14 @@ class ServiceEnquiry(models.Model):
     bank_id = fields.Many2one('res.bank',string="Bank")
     purpose = fields.Text(string="Purpose?")
     letter_print_type_id = fields.Many2many('letter.print.type',string="Type")
+    letter_cost = fields.Monetary(string="Letter Cost",compute="_compute_total_cost",store=True)
+
+    @api.depends('letter_print_type_id.cost')
+    def _compute_total_cost(self):
+        for record in self:
+            cost = sum(record.letter_print_type_id.mapped('cost'))
+            record.letter_cost = cost
+
     draft_if_any = fields.Binary(string="Draft if any")
     coc_certification = fields.Selection([('yes','Yes'),('no','No')],string="COC Certification")
     re_entry_issuance = fields.Selection([('single','Single'),('multiple','Multiple')],string="Re-entry issuance")
@@ -257,7 +265,7 @@ class ServiceEnquiry(models.Model):
     other_doc_3 = fields.Binary(string="Others")
     other_doc_4 = fields.Binary(string="Others")
     
-    salary_line_ids = fields.One2many('salary.line', 'ev_enq_visa_id', string="Salary Structure")
+    
     
 
 
@@ -451,13 +459,21 @@ class ServiceEnquiry(models.Model):
                     for p_line in pricing_id.pricing_line_ids:
                         if p_line.duration_id == record.employment_duration:
                             record.service_enquiry_pricing_ids.create({
+                                'name':pricing_id.name,
                                 'service_enquiry_id':record.id,
                                 'service_pricing_id':pricing_id.id,
                                 'service_pricing_line_id':p_line.id,
-                                'amount':p_line.id
+                                'amount':p_line.amount,
+                                'remarks':p_line.remarks
                                 })
                 else:
                     raise ValidationError(_('Service Pricing is not configured properly. Kindly contact your Accounts Manager'))
+            if record.letter_print_type_id:
+                record.service_enquiry_pricing_ids.create({
+                    'name':"Letter Cost",
+                    'amount':record.letter_cost,
+                    'service_enquiry_id':record.id,
+                    })
            
 
 
@@ -532,7 +548,7 @@ class ServiceEnquiry(models.Model):
             line.state = 'submitted'
             if line.service_request:
                 line.assign_govt_emp_one = True
-
+            self.update_pricing()
             self._add_followers()
 
     def action_process_complete(self):
@@ -696,8 +712,9 @@ class ServiceEnquiryPricingLine(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
     currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=False,
         related="company_id.currency_id",help="The payment's currency.")
+    name = fields.Char(string="Description")
 
     service_pricing_id = fields.Many2one('service.pricing',string="Service Name")
     service_pricing_line_id = fields.Many2one('service.pricing.line',string="Duration")
-    amount = fields.Monetary(string="Amount",store=True,related="service_pricing_line_id.amount")
-    remarks = fields.Text(string="Remarks",store=True,related="service_pricing_line_id.remarks")
+    amount = fields.Monetary(string="Amount")
+    remarks = fields.Text(string="Remarks")

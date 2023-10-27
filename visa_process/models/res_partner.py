@@ -17,7 +17,9 @@ class ResPartner(models.Model):
     total_employees = fields.Integer(compute='_compute_total_employees')
     employment_visa_count = fields.Integer(compute='_compute_employment_visa_count')
 
-    company_spoc_id = fields.Many2one('hr.employee',string="Accounts Manager",tracking=True,compute="update_accounts_manager",store=True)
+    company_spoc_id = fields.Many2one('hr.employee',string="Project Manager",tracking=True,compute="update_accounts_manager",store=True)
+
+    gosi_charges = fields.Float(string="Gosi Charges %")
 
     # Overrided fields
     vat = fields.Char(string='VAT', index=True, help="The Tax Identification Number. Complete it if the contact is subjected to government taxes. Used in some legal statements.")
@@ -30,7 +32,6 @@ class ResPartner(models.Model):
             if line.employee_ids:
                 for lines in line.employee_ids:
                     if lines.client_id:
-                        print("------------lineeeee",lines.client_id.login)
                         line.client_id = lines.client_id.id
                     else:
                         line.client_id = False

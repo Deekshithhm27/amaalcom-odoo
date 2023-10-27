@@ -44,6 +44,8 @@ class ServiceRequestConfg(models.Model):
     sequence = fields.Integer(string="Sequence",help="Gives the sequence order when displaying a list of Service Types in Tickets.")
 
     service_department_lines = fields.One2many('service.department.line','service_req_id',string="Department Lines")
+
+    process_type = fields.Selection([('automatic','Automatic'),('manual','Manual')],string="Process Type")
     
     _sql_constraints = [
         ('name_service_request_type_uniq', 'unique (name,service_request_type)', 'The Service type is already defined !')

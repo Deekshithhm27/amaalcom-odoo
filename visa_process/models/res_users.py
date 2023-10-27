@@ -14,7 +14,7 @@ class ResUsers(models.Model):
     user_type = fields.Selection([('external','External'),('internal','Internal')],string="Type of user to set System Access",required=True)
     partner_company_id = fields.Many2one('res.partner',string="Company",domain="[('is_company','=',True)]")
 
-    company_spoc_id = fields.Many2one('hr.employee',string="Accounts Manager",domain="[('custom_employee_type','=','internal')]")
+    company_spoc_id = fields.Many2one('hr.employee',string="Project Manager",domain="[('custom_employee_type','=','internal')]")
 
 
     def action_create_employee(self):

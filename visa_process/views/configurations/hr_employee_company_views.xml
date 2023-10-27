@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="salary_structure_form" model="ir.ui.view">
-        <field name="name">Salary Structure</field>
-        <field name="model">salary.structure</field>
+    <record id="hr_employee_company_form" model="ir.ui.view">
+        <field name="name">Company</field>
+        <field name="model">hr.employee.company</field>
         <field name="arch" type="xml">
-            <form string="Salary Structure">
+            <form string="Company">
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
-                    <separator string="Salary Structure" groups="hr.group_hr_user"/>
+                    <separator string="Company" groups="hr.group_hr_user"/>
                     <group groups="hr.group_hr_user">
                         <group>
                            <field name="name"/>
@@ -25,32 +25,32 @@
             </form>
         </field>
     </record>
-    <record id="salary_structure_tree" model="ir.ui.view">
-        <field name="name">Salary Structure</field>
-        <field name="model">salary.structure</field>
+    <record id="hr_employee_company_tree" model="ir.ui.view">
+        <field name="name">Company</field>
+        <field name="model">hr.employee.company</field>
         <field name="arch" type="xml">
-            <tree string="Salary Structure">
+            <tree string="Company">
                 <field name="name"/>
             </tree>
         </field>
     </record>
-    <record id="view_salary_structure_filter" model="ir.ui.view">
-        <field name="name">salary.structure.tree</field>
-        <field name="model">salary.structure</field>
+    <record id="view_hr_employee_company_filter" model="ir.ui.view">
+        <field name="name">hr.employee.company.tree</field>
+        <field name="model">hr.employee.company</field>
         <field name="arch" type="xml">
             <search string="Filter">
-                <field name="name" string="Salary Structure"/>
+                <field name="name" string="Company"/>
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
             </search>
         </field>
     </record>
 
-    <record id="action_salary_structure" model="ir.actions.act_window">
-        <field name="name">Salary Structure</field>
-        <field name="res_model">salary.structure</field>
+    <record id="action_hr_employee_company" model="ir.actions.act_window">
+        <field name="name">Company</field>
+        <field name="res_model">hr.employee.company</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="view_salary_structure_filter"/>
+        <field name="search_view_id" ref="view_hr_employee_company_filter"/>
     </record>
 
     

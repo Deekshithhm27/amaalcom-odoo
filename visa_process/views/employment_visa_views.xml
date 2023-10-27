@@ -100,7 +100,7 @@
 	                    	</group>
 	                    	
                 		</page>
-                        <page string="Medical Insurance Details">
+                        <page string="Medical Insurance Details" name="medical_page">
                             <group string="Medical Insurance">
                                 <group>
                                     <field name="medical_insurance_for"/>
@@ -117,6 +117,7 @@
                                     <tree editable="bottom">
                                         <field name="dependent_passport_id"/>
                                         <field name="dependent_border_id"/>
+                                        <field name="visa_page"/>
                                     </tree>
                                 </field>
                             </group>
@@ -124,22 +125,7 @@
                                 <field name="medical_doc"/>
                             </group>
                         </page>
-                		<page name="salary" string="Salary Structure">
-                            <field name="salary_line_ids">
-                                <form>
-                                    <group>
-                                        <group>
-                                            <field name="name"/>
-                                            <field name="amount"/>
-                                        </group>
-                                    </group>
-                                </form>
-                                <tree editable="bottom">
-                                    <field name="name"/>
-                                    <field name="amount" sum="Total Amount"/>
-                                </tree>
-                            </field>
-                        </page>
+                		
                 		<page name="documents" string="Documents Required">
                 			<group>
                 				<group>

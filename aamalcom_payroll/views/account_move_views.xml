@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="salary_lines_view_move_form_inherit" model="ir.ui.view">
+        <field name="name">account.move.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/notebook/page[1]" position="after">
+            	<page name="invoiced_employees" string="Invoiced Employees">
+                    <field name="salary_line_ids">
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="salary_tracking_id" invisible="1"/>
+                                    <field name="client_emp_sequence"/>
+                            		<field name="gosi_charge"/>
+                                </group>
+                            </group>
+                        </form>
+                        <tree editable="bottom">
+                            <field name="salary_tracking_id" invisible="0"/>
+                            <field name="client_emp_sequence"/>
+                            <field name="gosi_charge"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>           
+        </field>
+    </record>
+</odoo>

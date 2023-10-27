@@ -16,21 +16,6 @@ class LocalTransfer(models.Model):
     _description = "Local Transfer"
 
 
-    @api.model
-    def default_get(self,fields):
-        res = super(LocalTransfer,self).default_get(fields)
-        salary_lines = [(5,0,0)]
-        salary_ids = self.env['salary.structure'].search([])
-        for sal in salary_ids:
-            line = (0,0,{
-                'name':sal.id
-                })
-            salary_lines.append(line)
-        res.update({
-            'salary_line_ids':salary_lines
-            })
-        return res
-
     
     name = fields.Char(string="Sequence",help="The Unique Sequence no", readonly=True, default='/')
 
@@ -41,7 +26,7 @@ class LocalTransfer(models.Model):
     client_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id)
     approver_id = fields.Many2one('hr.employee',string="Approver")
 
-    employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external')]",string="Employee name (as per Passport)",tracking=True,required=True)
+    employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('service_request_type','=','lt_request'),('client_id','=',user_id)]",string="Employee name (as per Passport)",tracking=True,required=True)
     birthday = fields.Date(string="Date of Birth *",tracking=True)
     contact_no = fields.Char(string="Cell No. (Absher) *")
     private_email = fields.Char(string="Email Id *",tracking=True)
@@ -72,6 +57,7 @@ class LocalTransfer(models.Model):
 
     # # Documents
     passport_size_photo = fields.Binary(string="Passport Size Photo")
+    passport_copy = fields.Binary(string="Passport Copy *")
     dependents_if_any = fields.Binary(string="Dependents if any")
     signed_offer_letter = fields.Binary(string="Signed Offer Letter *")
     bank_iban_letter = fields.Binary(string="Bank Iban Letter *")
@@ -83,7 +69,6 @@ class LocalTransfer(models.Model):
     other_doc_3 = fields.Binary(string="Others")
     other_doc_4 = fields.Binary(string="Others")
     
-    salary_line_ids = fields.One2many('salary.line', 'local_transfer_id', string="Salary Structure")
 
     
 
@@ -102,7 +87,7 @@ class LocalTransfer(models.Model):
     air_fare_frequency = fields.Char(string="Air Fare Frequency")
 
     # Medical Insurance
-    medical_insurance_for = fields.Selection([('self','Self'),('family','Family')],string="Medical Insurance For?")
+    medical_insurance_for = fields.Selection([('self','Self'),('family','Family'),('both','Both')],string="Medical Insurance For?")
     insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Class *")
     dependent_document_ids = fields.One2many('dependent.documents','lt_dependent_document_id',string="Dependent Documents")
 
@@ -123,6 +108,9 @@ class LocalTransfer(models.Model):
                 line.doj = line.employee_id.doj
                 line.work_location_id = line.employee_id.work_location_id
                 line.birthday = line.employee_id.birthday
+                line.profession_en = line.employee_id.iqama
+                line.iqama = line.employee_id.iqama
+                line.working_days = line.employee_id.working_days
 
 
     def unlink(self):
@@ -186,6 +174,8 @@ class LocalTransfer(models.Model):
             raise UserError(_("Please add Email Id"))
         if not self.signed_offer_letter:
             raise UserError(_("Please attach signed offer letter"))
+        if not self.passport_copy:
+            raise UserError(_("Please attach Passport Copy"))
         if not self.birthday:
             raise UserError(_("Please add Birth date"))
         if not self.working_days:

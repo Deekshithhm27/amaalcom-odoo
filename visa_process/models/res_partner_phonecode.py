@@ -13,7 +13,7 @@ class ResPartnerPhonecode(models.Model):
     _order = 'id desc'
     _inherit = ['mail.thread']
     _rec_name = 'name'
-    _description = "Salary Structure"
+    _description = "Phone Codes"
 
     name = fields.Char(string="Code")
     active = fields.Boolean('Active', default=True)

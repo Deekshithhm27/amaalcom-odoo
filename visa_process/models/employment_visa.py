@@ -16,21 +16,6 @@ class EmploymentVisa(models.Model):
     _description = "EV Request"
 
 
-    @api.model
-    def default_get(self,fields):
-        res = super(EmploymentVisa,self).default_get(fields)
-        salary_lines = [(5,0,0)]
-        salary_ids = self.env['salary.structure'].search([])
-        for sal in salary_ids:
-            line = (0,0,{
-                'name':sal.id
-                })
-            salary_lines.append(line)
-        res.update({
-            'salary_line_ids':salary_lines
-            })
-        return res
-
     
     name = fields.Char(string="Sequence",help="The Unique Sequence no", readonly=True, default='/')
     active = fields.Boolean('Active', default=True)
@@ -38,7 +23,7 @@ class EmploymentVisa(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
     currency_id = fields.Many2one(related='company_id.currency_id', store=True, readonly=True)
 
-    employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external')]",string="Employee name(as per passport)",tracking=True,required=True)
+    employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('service_request_type','=','ev_request'),('client_id','=',user_id)]",string="Employee name(as per passport)",tracking=True,required=True)
     birthday = fields.Date(string="Date of Birth",tracking=True)
     contact_no = fields.Char(string="Contact # in the country",tracking=True)
     current_contact = fields.Char(string="Current Contact # (if Outside the country) *",tracking=True)
@@ -86,7 +71,6 @@ class EmploymentVisa(models.Model):
     other_doc_4 = fields.Binary(string="Others")
     
 
-    salary_line_ids = fields.One2many('salary.line', 'emp_visa_id', string="Salary Structure")
     
     approver_id = fields.Many2one('hr.employee',string="Approver")
 
@@ -96,6 +80,7 @@ class EmploymentVisa(models.Model):
     visa_country_id = fields.Many2one('res.country',string="Visa Nationality *")
     visa_stamping_city_id = fields.Char(string="Visa Stamping City *")
     visa_enjaz = fields.Char(string="Visa Enjaz Details *")
+    border_no = fields.Char(string="Border No.")
     no_of_visa = fields.Integer(string="No of Visa *")
     visa_fees = fields.Selection([('aamalcom','Aamalcom'),('lti','LTI')],string="Visa Fees")
     visa_gender = fields.Selection([('male','Male'),('female','Female'),('others','Others')],string="Visa Gender *")
@@ -111,7 +96,7 @@ class EmploymentVisa(models.Model):
     air_fare_frequency = fields.Char(string="Air Fare Frequency")
 
     # Medical Insurance
-    medical_insurance_for = fields.Selection([('self','Self'),('family','Family')],string="Medical Insurance For?")
+    medical_insurance_for = fields.Selection([('self','Self'),('family','Family'),('both','Both')],string="Medical Insurance For?")
     insurance_class = fields.Selection([('class_vip+','VIP+'),('class_vip','VIP'),('class_a','A'),('class_b','B'),('class_c','C'),('class_e','E')],string="Class *")
     dependent_document_ids = fields.One2many('dependent.documents','ev_dependent_document_id',string="Dependent Documents")
     medical_doc = fields.Binary(string="Medical Doc")

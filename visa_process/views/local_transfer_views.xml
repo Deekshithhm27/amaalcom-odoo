@@ -81,7 +81,7 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Medical Insurance Details">
+                        <page string="Medical Insurance Details" name="medical_page">
                             <group string="Medical Insurance">
                                 <group>
                                     <field name="medical_insurance_for"/>
@@ -95,33 +95,21 @@
                             <group attrs="{'invisible': [('medical_insurance_for', 'in',('self',False))]}" >
                                 <field name="dependent_document_ids">
                                     <tree editable="bottom">
+                                        <field name="person_name"/>
                                         <field name="dependent_passport_id" widget="binary"/>
                                         <field name="dependent_iqama_id" widget="binary"/>
                                         <field name="dependent_border_id" widget="binary"/>
+                                        <field name="visa_page"/>
                                     </tree>
                                 </field>
                             </group>
                         </page>
-                        <page name="salary" string="Salary Structure">
-                            <field name="salary_line_ids">
-                                <form>
-                                    <group>
-                                        <group>
-                                            <field name="name"/>
-                                            <field name="amount"/>
-                                        </group>
-                                    </group>
-                                </form>
-                                <tree editable="bottom">
-                                    <field name="name"/>
-                                    <field name="amount" sum="Total Amount"/>
-                                </tree>
-                            </field>
-                        </page>
+                        
                         <page name="documents" string="Documents Required">
                             <group>
                                 <group>
                                     <field name="passport_size_photo"/>
+                                    <field name="passport_copy" widget="binary"/>
                                     <field name="dependents_if_any"/>
                                 </group>
                                 <group>

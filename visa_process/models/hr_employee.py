@@ -12,6 +12,10 @@ class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
     sequence = fields.Char(string="Sequence",help="The Unique Sequence no", readonly=True, default='/')
+
+    client_emp_sequence = fields.Char(string="Employee Id",help="Employee Id as per client database")
+    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",default='lt_request',tracking=True)
+    hr_employee_company_id = fields.Many2one('hr.employee.company',string="Company",help="This field is used to tag the employee of different sister company")
     
     surname = fields.Char(string="Surname",tracking=True)
     given_name = fields.Char(string="Given Name",tracking=True)
@@ -28,7 +32,8 @@ class HrEmployee(models.Model):
 
     religion = fields.Selection([('muslim','Muslim'),('non_muslim','Non-Muslim'),('others','Others')],string="Religion")
 
-    client_id = fields.Many2one('res.users',string="Client")
+    client_id = fields.Many2one('res.users',string="Client Spoc")
+    client_parent_id = fields.Many2one('res.partner',string="Client",related="client_id.partner_id.parent_id",store=True)
 
     iqama_certificate = fields.Binary(string="Iqama")
     degree_certificate = fields.Binary(string="Degree")
@@ -76,3 +81,16 @@ class HrEmployee(models.Model):
 
 
 
+
+class HrEmployeeCompany(models.Model):
+    _name = 'hr.employee.company'
+    _order = 'name desc'
+    _inherit = ['mail.thread']
+    _rec_name = 'name'
+    _description = "Sister Companies"
+
+    name = fields.Char(string="Name")
+    active = fields.Boolean('Active', default=True)
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
+    currency_id = fields.Many2one(related='company_id.currency_id', store=True, readonly=True)

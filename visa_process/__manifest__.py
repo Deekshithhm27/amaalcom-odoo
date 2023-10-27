@@ -24,10 +24,10 @@
         'reports/service_request_treasury_report.xml',
         'reports/action.xml',
 
+        'views/configurations/hr_employee_company_views.xml',
         'views/configurations/employment_duration_views.xml',
         'views/configurations/letter_print_type_views.xml',
         'views/configurations/res_partner_phonecode_views.xml',
-        'views/configurations/salary_structure_views.xml',
         'views/configurations/service_request_config_views.xml',
         'views/configurations/service_pricing_views.xml',
         'views/configurations/visa_ref_documents_views.xml',

@@ -8,13 +8,27 @@ from dateutil.relativedelta import relativedelta
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
+class SalaryStructure(models.Model):
+    _name = 'hr.client.salary.rule'
+    _order = 'id asc'
+    _inherit = ['mail.thread']
+    _rec_name = 'name'
+    _description = "Salary Structure"
+
+    name = fields.Char(string="Type",tracking=True)
+    code = fields.Char(string="Code",tracking=True)
+    active = fields.Boolean('Active', default=True)
+    user_id = fields.Many2one('res.users', string='User', default=lambda self: self.env.user)
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
+
+
 class SalaryLines(models.Model):
     _name = "salary.line"
     _order = 'id desc'
     _inherit = ['mail.thread']
     _rec_name = 'name'
 
-    name = fields.Many2one('salary.structure',string="Structure Type")
+    name = fields.Many2one('hr.client.salary.rule',string="Structure Type")
 
     emp_visa_id = fields.Many2one('employment.visa',string="Employment Visa Id")
     ev_enq_visa_id = fields.Many2one('service.enquiry',string="EV Service Enquiry")

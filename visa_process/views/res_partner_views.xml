@@ -7,14 +7,15 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="is_client" invisible="1"/>
-                <field name="client_id"/>
+                <field name="client_id" attrs="{'invisible':[('user_ids','=',False)]}" groups="visa_process.group_service_request_operations_manager"/>
+                <field name="gosi_charges" attrs="{'invisible':[('parent_id','!=',False)]}"/>
             </xpath>
             <xpath expr="//page[@name='sales_purchases']" position="attributes">
                 <attribute name="groups">visa_process.group_service_request_manager</attribute>
             </xpath>
             <xpath expr="//field[@name='category_id']" position="after">
                 <field name="client_code" groups="visa_process.group_service_request_manager" attrs="{'invisible':['|',('is_client','=',True),('is_company','=',False)]}"/>
-                <field name="company_spoc_id" attrs="{'required':[('is_client', '=', True)],'invisible':[('is_client','=',False)]}"/>
+                <field name="company_spoc_id" attrs="{'required':[('is_client', '=', True)],'invisible':[('is_client','=',False)]}" />
             </xpath>
 
             <!-- <div name="button_box" position="inside">

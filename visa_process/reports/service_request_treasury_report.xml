@@ -10,12 +10,20 @@
                     	<tr>
                     		<td><b>Document No.</b></td>
                     		<td><span t-esc="o.name"/></td>
-                    		<td><b>Service Request</b></td>
+                    	</tr>
+                    	<tr>
+                    		<td><b>Service Ref No.</b></td>
                     		<td><span t-esc="o.service_request_id.name"/></td>
+                    	</tr>
+                    	<tr>
+                    		<td><b>Service Request</b></td>
+                    		<td><span t-esc="o.service_request_id.service_request_config_id.name"/></td>
                     	</tr>
                     	<tr>
                     		<td><b>Client</b></td>
                     		<td><span t-esc="o.client_id.name"/></td>
+                    	</tr>
+                    	<tr>
                     		<td><b>Employee</b></td>
                     		<td><span t-esc="o.employee_id.name"/></td>
                     		
@@ -23,8 +31,28 @@
                     	<tr>
                     		<td><b>Duration</b></td>
                     		<td><span t-esc="o.employment_duration.name"/></td>
+                    	</tr>
+                    	<tr>
                     		<td><b>Price</b></td>
                     		<td><span t-esc="o.total_amount"/></td>
+                    	</tr>
+
+                    	<tr>
+                    		<td>
+                    			
+				                
+								<!--  <a t-att-href="'/web/content/' + o.id + '/' + o.service_request_id.upload_hr_card + '/download/example.pdf'"
+                           t-attf-target="_blank">
+                            View PDF Document
+                        </a> -->
+
+
+				                <!-- <t t-if="o.service_request_id.upload_hr_card">
+							        <object t-att-data="'data:application/pdf;base64,' + o.service_request_id.upload_hr_card.decode('utf-8')" type="application/pdf" width="100%" height="500">
+							            <p>PDF viewer is not available. <a t-att-href="'data:application/pdf;base64,' + o.service_request_id.upload_hr_card.decode('utf-8')" download="document.pdf">Download PDF</a> instead.</p>
+							        </object>
+							    </t> -->
+                    		</td>
                     	</tr>
                     </table>
                 </div>
