@@ -18,7 +18,7 @@
                             </group>
                         </form>
                         <tree editable="bottom">
-                            <field name="salary_tracking_id" invisible="0"/>
+                            <field name="salary_tracking_id" invisible="1"/>
                             <field name="client_emp_sequence"/>
                             <field name="gosi_charge"/>
                         </tree>
