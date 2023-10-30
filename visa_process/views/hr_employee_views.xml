@@ -16,7 +16,7 @@
                 <field name="name" placeholder="Name as per Passport" required="True"/>
             </xpath>
             <xpath expr="//sheet/div[2]/h1" position="before">
-                <field name="service_request_type" widget="radio" nolabel="1" options="{'horizontal': true}"/>
+                <field name="service_request_type" widget="radio" nolabel="1" options="{'horizontal': true}" attrs="{'invisible': [('user_id', '!=', False)]}"/>
                 <h2 class="d-flex">
                     <field name="sequence"/>
                 </h2>
