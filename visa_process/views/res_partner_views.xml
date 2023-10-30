@@ -14,7 +14,6 @@
                 <attribute name="groups">visa_process.group_service_request_manager</attribute>
             </xpath>
             <xpath expr="//field[@name='category_id']" position="after">
-                <field name="client_code" groups="visa_process.group_service_request_manager" attrs="{'invisible':['|',('is_client','=',True),('is_company','=',False)]}"/>
                 <field name="company_spoc_id" attrs="{'required':[('is_client', '=', True)],'invisible':[('is_client','=',False)]}" />
             </xpath>
 

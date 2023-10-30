@@ -11,7 +11,6 @@ from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    client_code = fields.Char(string="Client Code")
     is_client = fields.Boolean(string='Is a client', default=False,
         help="Check if the contact is a client",store=True,compute="_check_type_of_partner")
     total_employees = fields.Integer(compute='_compute_total_employees')
