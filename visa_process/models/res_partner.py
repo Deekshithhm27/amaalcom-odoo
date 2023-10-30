@@ -18,8 +18,6 @@ class ResPartner(models.Model):
 
     company_spoc_id = fields.Many2one('hr.employee',string="Project Manager",tracking=True,compute="update_accounts_manager",store=True)
 
-    gosi_charges = fields.Float(string="Gosi Charges %")
-
     # Overrided fields
     vat = fields.Char(string='VAT', index=True, help="The Tax Identification Number. Complete it if the contact is subjected to government taxes. Used in some legal statements.")
 

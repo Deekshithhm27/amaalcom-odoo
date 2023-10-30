@@ -8,7 +8,6 @@
             <xpath expr="//field[@name='vat']" position="after">
                 <field name="is_client" invisible="1"/>
                 <field name="client_id" attrs="{'invisible':[('user_ids','=',False)]}" groups="visa_process.group_service_request_operations_manager"/>
-                <field name="gosi_charges" attrs="{'invisible':[('parent_id','!=',False)]}"/>
             </xpath>
             <xpath expr="//page[@name='sales_purchases']" position="attributes">
                 <attribute name="groups">visa_process.group_service_request_manager</attribute>
