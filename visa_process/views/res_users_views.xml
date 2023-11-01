@@ -7,8 +7,9 @@
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('oe_title')]/group[1]/field[@name='partner_id']" position="after">
                 <field name="user_type"/>
-                <field name="partner_company_id" attrs="{'invisible': [('user_type', '=', False)],'required':[('user_type','=','external')]}"/>
-                <field name="company_spoc_id" attrs="{'invisible': ['|',('user_type', '=', 'internal'),('user_type','=',False)],'required':[('user_type','=','external')]}"/>
+                <field name="partner_company_id" attrs="{'invisible': ['|',('user_type', '=', False),('user_type','=','internal')],'required':[('user_type','=','external')]}" options="{'no_create': True}"/>
+                <field name="internal_company_id" attrs="{'invisible': ['|',('user_type', '=', False),('user_type','=','external')],'required':[('user_type','=','internal')]}" options="{'no_create': True}"/>
+                <field name="company_spoc_id" attrs="{'invisible': ['|',('user_type', '=', 'internal'),('user_type','=',False)],'required':[('user_type','=','external')]}" options="{'no_create': True}"/>
             </xpath>
         </field>
     </record>
