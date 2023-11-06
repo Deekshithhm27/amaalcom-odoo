@@ -19,6 +19,7 @@
     'data': [
         'security/hr_payroll_security.xml',
         'security/ir.model.access.csv',
+        'data/hr_contract_type.xml',
         'data/hr_payroll_sequence.xml',
         'data/hr_payroll_category.xml',
         'data/hr_payroll_data.xml',
