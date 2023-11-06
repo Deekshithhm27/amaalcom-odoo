@@ -7,11 +7,9 @@
         <menuitem id="menu_gosi_charges" action="action_gosi_charges" sequence="3"/> 
 
     </menuitem>
-    <!-- <menuitem id="menu_hr_client_configuration" parent="om_hr_payroll.menu_hr_payroll_root" name="Configuration" sequence="102">
-
+    <menuitem id="menu_hr_client_configuration" parent="om_hr_payroll.menu_hr_payroll_root" name="Client Configuration" sequence="102" groups="hr.group_hr_manager">
     	<menuitem id="menu_hr_client_salary_structure" action="action_hr_client_salary_rules" sequence="1" groups="base.group_no_one"/> 
-
-    </menuitem> -->
+    </menuitem>
 
     <menuitem id="om_hr_payroll.menu_hr_payroll_root"
               name="Payroll"

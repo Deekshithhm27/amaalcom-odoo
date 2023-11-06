@@ -73,12 +73,13 @@ class HrEmployee(models.Model):
 
 class EmpSalaryLines(models.Model):
     _name = "emp.salary.line"
-    _order = 'id desc'
+    _order = 'sequence asc'
     _inherit = ['mail.thread']
     _rec_name = 'name'
     _description = "Employee Salary Line"
 
     name = fields.Many2one('hr.client.salary.rule',string="Structure Type")
+    sequence = fields.Integer(string="Sequence",related="name.sequence",store=True)
 
     employee_id = fields.Many2one('hr.employee',string="Employee")
     
