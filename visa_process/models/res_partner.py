@@ -23,7 +23,7 @@ class ResPartner(models.Model):
 
     client_id = fields.Many2one('res.users',string="Client",compute="get_external_emp_client_id",store=True)
 
-    @api.depends('employee_ids')
+    @api.depends('employee_ids','employee_ids.client_id')
     def get_external_emp_client_id(self):
         for line in self:
             if line.employee_ids:
