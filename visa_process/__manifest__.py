@@ -19,7 +19,7 @@
         'security/ir.model.access.csv',
         'security/standard_security/update_access.xml',
         'data/sequences.xml',
-        # 'security/ir_rule.xml',
+        'security/ir_rule.xml',
 
         'reports/service_request_treasury_report.xml',
         'reports/action.xml',

@@ -17,7 +17,7 @@
         <field name="name">Employment Visa Service Request Amalcom Spoc</field>
         <field name="model_id" ref="model_employment_visa"/>
         <field name="domain_force">[('approver_id.user_id.id', '=', user.id),('state','in',('waiting','approved','reject'))]</field>
-        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_manager'))]"/>
     </record>
 
     <!-- Local Transfer Rules -->
@@ -31,7 +31,7 @@
         <field name="name">Local Transfer Service Request Amalcom Spoc</field>
         <field name="model_id" ref="model_local_transfer"/>
         <field name="domain_force">[('approver_id.user_id.id', '=', user.id),('state','in',('waiting','approved','reject'))]</field>
-        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_manager'))]"/>
     </record>
     <!-- rule for service enquiry -->
     <record id="ir_rule_service_enquiry" model="ir.rule">

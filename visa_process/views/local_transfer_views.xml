@@ -165,6 +165,7 @@
                 <field name="employee_id" string="Employee"/>
                 <field name="client_id" string="Client"/>
                 <field name="country_id" string="Nationality"/>
+                <filter string="To Approve" name="approval_requests" domain="[('state', '=','waiting')]"/>
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active', '=', False)]" attrs="{}"/>
                 <group expand="0" string="Group By...">
@@ -183,5 +184,20 @@
         <field name="res_model">local.transfer</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="local_transfer_filter"/>
+    </record>
+
+    <record id="action_local_transfer_manager" model="ir.actions.act_window">
+        <field name="name">Requests for Approval</field>
+        <field name="res_model">local.transfer</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="local_transfer_filter"/>
+        <field name="context">{'search_default_approval_requests': 1}</field>
+        <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                No requests found
+              </p><p>
+                Try creating new one!!
+              </p>
+        </field>
     </record>
 </odoo>

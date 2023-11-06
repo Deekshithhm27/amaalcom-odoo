@@ -59,7 +59,7 @@
         <field name="name">Administrator</field>
         <field name="comment">The user will have access to configure API connection.</field>
         <field name="category_id" ref="visa_process.module_category_service_request"/>
-        <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        <field name="users" eval="[(4,ref('visa_process.group_service_request_client_spoc')),(4,ref('visa_process.group_service_request_manager')),(4,ref('visa_process.group_service_request_operations_manager')),(4,ref('visa_process.group_service_request_general_manager')),(4,ref('visa_process.group_service_request_finance_manager')),(4,ref('visa_process.group_service_request_govt_manager')),(4,ref('visa_process.group_service_request_employee')),(4,ref('visa_process.group_service_request_hr_manager')))]"/>
     </record>
 
     <!-- adding client as group for access right -->

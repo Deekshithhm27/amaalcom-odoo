@@ -146,6 +146,7 @@
         </field>
     </record>
 
+    <!-- This action is used to display employees under particular team -->
     <record id="action_team_employees" model="ir.actions.act_window">
         <field name="name">Employees</field>
         <field name="res_model">hr.employee</field>
