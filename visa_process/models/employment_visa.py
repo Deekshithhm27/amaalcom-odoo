@@ -55,6 +55,7 @@ class EmploymentVisa(models.Model):
     weekly_off_days = fields.Char(string="Weekly Off (No. Of Days)",tracking=True)
 
     client_id = fields.Many2one('res.partner',string="Client",default=lambda self: self.env.user.partner_id)
+    client_company_id = fields.Many2one('res.partner',string="Client Company",default=lambda self: self.env.user.partner_id.parent_id)
 
     # # Documents
     signed_offer_letter = fields.Binary(string="Signed Offer letter/should be attached *")
