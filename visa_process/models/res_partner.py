@@ -42,7 +42,7 @@ class ResPartner(models.Model):
                 for user in user_ids:
                     line.parent_id = user.partner_company_id
 
-    @api.depends('user_ids')
+    @api.depends('user_ids','user_ids.company_spoc_id')
     def _check_type_of_partner(self):
         for line in self:
             if line.user_ids:
