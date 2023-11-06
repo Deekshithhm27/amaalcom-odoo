@@ -16,7 +16,7 @@
                                 </group>
                             </group>
                         </form>
-                        <tree editable="bottom">
+                        <tree editable="bottom" create="0">
                             <field name="name"/>
                             <field name="amount" sum="Total Amount"/>
                         </tree>
