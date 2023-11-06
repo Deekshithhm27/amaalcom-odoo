@@ -189,7 +189,7 @@
                 <field name="client_id"/>
                 <field name="designation"/>
                 <field name="doj"/>
-                <field name="employment_duration"/>
+                <field name="employment_duration" string="Duration of Employment"/>
                 <field name="state"/>
             </tree>
         </field>
