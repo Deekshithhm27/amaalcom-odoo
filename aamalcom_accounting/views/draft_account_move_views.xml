@@ -23,7 +23,7 @@
                            <field name="user_id" invisible="1"/>
                            <field name="company_id" invisible="1"/>
                            <field name="active" invisible="1"/>
-                           <field name="parent_client_id"/>
+                           <field name="client_parent_id"/>
                            <field name="client_id" invisible="1"/>
                            <field name="service_enquiry_id"/>
                         </group>

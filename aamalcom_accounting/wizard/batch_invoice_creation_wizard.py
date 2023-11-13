@@ -5,13 +5,13 @@ class CreateAccountMoveWizard(models.TransientModel):
     _name = 'batch.invoice.creation.wizard'
     _description = 'Create Account Move Wizard'
 
-    client_id = fields.Many2one('res.partner', string='Client')
+    client_parent_id = fields.Many2one('res.partner',string="Client",domain="[('is_company','=',True)]")
     date_from = fields.Date(string='Date From')
     date_to = fields.Date(string='Date To')
 
     def create_account_move(self):
         draft_account_moves = self.env['draft.account.move'].search([
-            ('client_id', '=', self.client_id.id),
+            ('client_parent_id', '=', self.client_parent_id.id),
             ('date', '>=', self.date_from),
             ('date', '<=', self.date_to),('state','=','draft')
         ])
@@ -34,7 +34,7 @@ class CreateAccountMoveWizard(models.TransientModel):
 
         if consolidated_lines:
             new_account_move = self.env['account.move'].create({
-                'partner_id': self.client_id.parent_id.id,
+                'partner_id': self.client_parent_id.id,
                 'date': fields.Date.today(),
                 'move_type': 'out_invoice',  # Set the appropriate move type
                 'invoice_line_ids': consolidated_lines,

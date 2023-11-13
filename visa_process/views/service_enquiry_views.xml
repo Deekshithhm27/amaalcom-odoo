@@ -826,7 +826,7 @@
                 <field name="name"/>
 				<field name="service_request"/>
                 <field name="approver_id"/>
-                <field name="approver_user_id"/>
+                <field name="approver_user_id" invisible="1"/>
                 <field name="state"/>
             </tree>
         </field>

@@ -24,3 +24,6 @@ access_hr_contract_type_client_spoc,access_hr_contract_type_client_spoc,om_hr_pa
 access_hr_contract_client_spoc,access_hr_contract_client_spoc,om_hr_payroll.model_hr_contract,visa_process.group_service_request_client_spoc,1,1,1,0
 
 
+access_hr_payslip_employee,access_hr_payslip_employee,om_hr_payroll.model_hr_payslip,visa_process.group_service_request_employee,1,0,0,0
+access_hr_leave_type_employee,access_hr_leave_type_employee,hr_holidays.model_hr_leave_type,visa_process.group_service_request_employee,1,0,0,0
+

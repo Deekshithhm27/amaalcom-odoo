@@ -36,7 +36,7 @@ class DraftAccountMove(models.Model):
         default='draft')
 
     client_id = fields.Many2one('res.partner',string="Client Spoc")
-    parent_client_id = fields.Many2one('res.partner',string="Client")
+    client_parent_id = fields.Many2one('res.partner',string="Client")
     service_enquiry_id = fields.Many2one('service.enquiry',string="Service Ticket Ref")
 
 

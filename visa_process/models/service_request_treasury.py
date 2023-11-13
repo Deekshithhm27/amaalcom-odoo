@@ -24,7 +24,8 @@ class ServiceRequestTreasury(models.Model):
 
     service_request_id = fields.Many2one('service.enquiry',string="Service Request")
     employee_id = fields.Many2one('hr.employee',string="Employee")
-    client_id = fields.Many2one('res.partner',string="Client")
+    client_id = fields.Many2one('res.partner',string="Client Spoc")
+    client_parent_id = fields.Many2one('res.partner',string="Client")
     employment_duration = fields.Many2one('employment.duration',string="Duration",tracking=True)
     total_amount = fields.Monetary(string="Price")
 

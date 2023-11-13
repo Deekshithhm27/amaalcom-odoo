@@ -4,7 +4,7 @@
     <menuitem id="menu_hr_client_payroll_base" parent="om_hr_payroll.menu_hr_payroll_root" name="Client Employee Payroll" sequence="101">
     	<menuitem id="menu_hr_client_employee_payroll" action="action_client_employee_monthly_salary_tracking" sequence="1"/> 
         <menuitem id="menu_hr_client_employee_inv" action="action_client_emp_salary_tracking_wizard" sequence="2"/> 
-        <menuitem id="menu_gosi_charges" action="action_gosi_charges" sequence="3"/> 
+        <menuitem id="menu_gosi_charges" action="action_gosi_charges" sequence="3" groups="base.group_no_one"/> 
 
     </menuitem>
     <menuitem id="menu_hr_client_configuration" parent="om_hr_payroll.menu_hr_payroll_root" name="Client Configuration" sequence="102" groups="hr.group_hr_manager">

@@ -53,8 +53,6 @@ class HrPayslipEmployees(models.TransientModel):
                 invoice_line_id = self.env['account.move'].search([('id','=',pay_data.invoice_id.id)])
 
                 for line in invoice_line_id:
-                    print("---------llllll",float(line.amount_residual))
-                    print("-------sssssss",line.name)
                     if line.amount_residual > 0:
                         raise UserError(_("Unable to proceed. Payment is not yet recieved"))
 

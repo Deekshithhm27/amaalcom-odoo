@@ -452,6 +452,7 @@ class ServiceEnquiry(models.Model):
 
     def update_pricing(self):
         for record in self:
+            record.service_enquiry_pricing_ids = False
             pricing_id = self.env['service.pricing'].search([('service_request_type', '=', record.service_request_type),
                     ('service_request', '=', record.service_request)], limit=1)
             if record.aamalcom_pay:
@@ -513,6 +514,7 @@ class ServiceEnquiry(models.Model):
             vals = {
             'service_request_id': self.id,
             'client_id': self.client_id.id,
+            'client_parent_id':self.client_id.parent_id.id,
             'employee_id':self.employee_id.id,
             'employment_duration':self.employment_duration.id,
             'total_amount':self.total_amount

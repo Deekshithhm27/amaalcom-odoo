@@ -29,6 +29,7 @@
                            <field name="active" invisible="1"/>
                            <field name="service_request_id" readonly="1"/>
                            <field name="employee_id" readonly="1"/>
+                           <field name="client_parent_id" readonly="1"/>
                            <field name="client_id" readonly="1"/>
                            <field name="employment_duration" readonly="1"/>
                            <field name="total_amount" readonly="1"/>

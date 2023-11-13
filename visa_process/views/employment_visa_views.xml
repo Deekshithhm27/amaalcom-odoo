@@ -227,7 +227,7 @@
         <field name="name">Requests for Approval</field>
         <field name="res_model">employment.visa</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref="local_transfer_filter"/>
+        <field name="search_view_id" ref="employment_visa_filter"/>
         <field name="context">{'search_default_approval_requests': 1}</field>
         <field name="help" type="html">
               <p class="o_view_nocontent_smiling_face">

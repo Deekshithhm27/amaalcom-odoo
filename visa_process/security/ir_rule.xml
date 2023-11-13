@@ -44,7 +44,35 @@
         <field name="name">Service enquiry - Amalcom Spoc</field>
         <field name="model_id" ref="model_service_enquiry"/>
         <field name="domain_force">[('approver_id.user_id.id', '=', user.id)]</field>
-        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_client_spoc'))]"/>
+    </record>
+    <record id="ir_rule_service_enquiry_op_approval" model="ir.rule">
+        <field name="name">Service enquiry - Operation Manager</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">[('state', 'not in',('draft','submitted','refuse','cancel'))]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_operations_manager'))]"/>
+    </record>
+    <record id="ir_rule_service_enquiry_gm_approval" model="ir.rule">
+        <field name="name">Service enquiry - General Manager</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">[('state', 'not in',('draft','submitted','waiting_op_approval','refuse','cancel'))]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_general_manager'))]"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_write" eval="1"/>
+    </record>
+    <record id="ir_rule_service_enquiry_fin_approval" model="ir.rule">
+        <field name="name">Service enquiry - Finance Manager</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">[('state', 'not in',('draft','submitted','waiting_op_approval','waiting_gm_approval','refuse','cancel'))]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_finance_manager'))]"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_write" eval="1"/>
+    </record>
+    <record id="ir_rule_service_enquiry_govt_employee" model="ir.rule">
+        <field name="name">Service enquiry - Government Employee</field>
+        <field name="model_id" ref="model_service_enquiry"/>
+        <field name="domain_force">['|',('first_govt_employee_id.user_id.id', '=', user.id),('second_govt_employee_id.user_id.id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('visa_process.group_service_request_employee'))]"/>
     </record>
 
     <record id="ir_rule_service_enquiry_admin_view" model="ir.rule">
