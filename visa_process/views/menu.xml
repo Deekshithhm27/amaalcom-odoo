@@ -106,11 +106,16 @@
     </record>
 
     <record id="contacts.menu_contacts" model="ir.ui.menu">
-        <field name="groups_id" eval="[(4, ref('visa_process.group_service_request_administrator'))]"/>
+        <field name="groups_id" eval="[
+            (4, ref('visa_process.group_service_request_administrator')),
+            (4, ref('visa_process.group_service_request_manager')),
+            (4, ref('visa_process.group_service_request_operations_manager')),
+            (4, ref('visa_process.group_service_request_general_manager')),
+            (4, ref('visa_process.group_service_request_finance_manager')),
+            (4, ref('visa_process.group_service_request_govt_manager')),
+            (4, ref('visa_process.group_service_request_hr_manager'))]"/>
     </record>
 
-
-    
 
    
 
