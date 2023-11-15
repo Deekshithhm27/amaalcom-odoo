@@ -12,6 +12,7 @@ from . import visa_ref_documents
 #-------------------------------#
 
 from . import res_users
+from . import res_company
 from . import res_partner
 from . import hr_employee
 from . import local_transfer
