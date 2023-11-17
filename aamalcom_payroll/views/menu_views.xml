@@ -21,7 +21,7 @@
     <menuitem id="om_hr_payroll.menu_hr_payroll_root"
               name="Payroll"
               sequence="186"
-              web_icon="om_hr_payroll,static/description/icon.png" groups="om_hr_payroll.group_hr_payroll_user,om_hr_payroll.group_hr_payroll_manager"/>
+              web_icon="om_hr_payroll,static/description/icon.png" groups="om_hr_payroll.group_hr_payroll_manager"/>
 
     <record id="om_hr_payroll.menu_department_tree" model="ir.ui.menu">
         <field name="groups_id" eval="[(3, ref('om_hr_payroll.group_hr_payroll_user'))]"/>
@@ -30,6 +30,23 @@
     <record id="om_hr_payroll.menu_department_tree" model="ir.ui.menu">
         <field name="groups_id" eval="[(4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
     </record>
+
+    <record id="hr_holidays.menu_hr_holidays_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(3, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="hr_holidays.menu_hr_holidays_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[
+            (4, ref('visa_process.group_service_request_administrator')),
+            (4, ref('visa_process.group_service_request_manager')),
+            (4, ref('visa_process.group_service_request_operations_manager')),
+            (4, ref('visa_process.group_service_request_general_manager')),
+            (4, ref('visa_process.group_service_request_finance_manager')),
+            (4, ref('visa_process.group_service_request_govt_manager')),
+            (4, ref('visa_process.group_service_request_hr_manager'))]"/>
+    </record>
+
+
 
 
 </odoo>
