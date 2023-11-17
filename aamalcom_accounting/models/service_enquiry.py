@@ -24,7 +24,7 @@ class ServiceEnquiry(models.Model):
     def action_create_payment_req(self):
         vals = {
             'client_id': self.client_id.id,
-            'client_parent_id':self.client_parent_id.id,
+            'client_parent_id':self.client_id.parent_id.id,
             'employee_id':self.employee_id.id,
             'amount':self.total_amount,
             'service_enquiry_id':self.id

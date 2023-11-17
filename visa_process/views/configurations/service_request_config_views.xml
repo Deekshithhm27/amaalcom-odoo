@@ -67,7 +67,7 @@
         <field name="name">Service Request</field>
         <field name="model">service.request.config</field>
         <field name="arch" type="xml">
-            <tree string="Service Request">
+            <tree string="Service Request" create="0" edit="0">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="service_request_type"/>

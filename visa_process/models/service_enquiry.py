@@ -73,6 +73,9 @@ class ServiceEnquiry(models.Model):
     
     employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('client_id','=',user_id)]",string="Employee",store=True,tracking=True,required=True)
 
+    transfer_type = fields.Selection([('to_aamalcom','To Aamalcom'),('to_another_establishment','To another Establishment')],string="Transfer Type")
+
+
     @api.onchange('employee_id')
     def update_service_request_type_from_employee(self):
         for line in self:
@@ -145,7 +148,7 @@ class ServiceEnquiry(models.Model):
     upload_attestation_waiver_letter_doc = fields.Binary(string="Attestation Waiver Document")
     upload_embassy_letter_doc = fields.Binary(string="Embassy Letter")
     upload_istiqdam_letter_doc = fields.Binary(string="Istiqdam Letter")
-    upload_sce_letter_doc = fields.Binary(string="SCE Letter")
+    # upload_sce_letter_doc = fields.Binary(string="SCE Letter")
     upload_bilingual_salary_certificate_doc = fields.Binary(string="Bilingual Salary Certificate")
     upload_contract_letter_doc = fields.Binary(string="Contract Letter")
     upload_bank_account_opening_letter_doc = fields.Binary(string="Bank account Opening Letter")
@@ -185,7 +188,7 @@ class ServiceEnquiry(models.Model):
 
 
     # Common fields
-    employment_duration = fields.Many2one('employment.duration',string="Duration",tracking=True)
+    employment_duration = fields.Many2one('employment.duration',string="Duration",tracking=True,domain="[('service_request_type','=',service_request_type),('service_request_config_id','=',service_request_config_id)]")
     exit_type = fields.Selection([('single','Single'),('multiple','Multiple')],string="Type")
 
     
@@ -322,6 +325,18 @@ class ServiceEnquiry(models.Model):
     final_doc_uploaded = fields.Boolean(string="Final Document uploaded",default=False)
     total_treasury_requests = fields.Integer(string="Request Details",compute="_compute_total_treasury_requests")
 
+    is_service_request_client_spoc = fields.Boolean(
+        string="Is Service Request Client SPOC",
+        compute='_compute_is_service_request_client_spoc'
+    )
+
+    @api.depends('user_id.groups_id')
+    def _compute_is_service_request_client_spoc(self):
+        """Compute function to check if the user belongs to group_service_request_client_spoc"""
+        spoc_group = self.env.ref('visa_process.group_service_request_client_spoc')
+        for record in self:
+            record.is_service_request_client_spoc = spoc_group in record.env.user.groups_id
+
     @api.onchange('emp_visa_id')
     def update_employee_id(self):
         for line in self:
@@ -447,7 +462,21 @@ class ServiceEnquiry(models.Model):
             for lines in line.service_enquiry_pricing_ids:
                 total_amount += lines.amount
 
-            line.total_amount = total_amount    
+            line.total_amount = total_amount  
+
+    @api.onchange('billable_to_client')
+    def update_billable_to_aamalcom(self):
+        for line in self:
+            if line.billable_to_client:
+                line.billable_to_aamalcom = False
+
+    @api.onchange('billable_to_aamalcom')
+    def update_billable_to_client(self):
+        for line in self:
+            if line.billable_to_aamalcom:
+                line.billable_to_client = False
+
+
 
 
     def update_pricing(self):
@@ -459,6 +488,19 @@ class ServiceEnquiry(models.Model):
                 if pricing_id:
                     for p_line in pricing_id.pricing_line_ids:
                         if p_line.duration_id == record.employment_duration:
+                            record.service_enquiry_pricing_ids.create({
+                                'name':pricing_id.name,
+                                'service_enquiry_id':record.id,
+                                'service_pricing_id':pricing_id.id,
+                                'service_pricing_line_id':p_line.id,
+                                'amount':p_line.amount,
+                                'remarks':p_line.remarks
+                                })
+                        if record.service_request == 'new_ev':
+                            # need to check if they are going to enter duration for pricing.
+                            # there will be a issue if they add multiple lines in pricing,
+                            # instead its better to have duration for New Visa.
+                            # or they need to be very cautious in adding pricing
                             record.service_enquiry_pricing_ids.create({
                                 'name':pricing_id.name,
                                 'service_enquiry_id':record.id,
@@ -662,9 +704,9 @@ class ServiceEnquiry(models.Model):
         'upload_apartment_lease_doc','upload_istiqdam_form_doc','upload_family_visa_letter_doc','upload_employment_contract_doc',
         'upload_cultural_letter_doc','upload_family_visit_visa_doc',
         'upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc','upload_bank_loan_doc','upload_rental_agreement_doc',
-        'upload_exception_letter_doc','upload_attestation_waiver_letter_doc','upload_embassy_letter_doc','upload_istiqdam_letter_doc','upload_sce_letter_doc',
+        'upload_exception_letter_doc','upload_attestation_waiver_letter_doc','upload_embassy_letter_doc','upload_istiqdam_letter_doc',
         'upload_bilingual_salary_certificate_doc','upload_contract_letter_doc','upload_bank_account_opening_letter_doc','upload_bank_limit_upgrading_letter_doc','upload_final_exit_issuance_doc','upload_soa_doc',
-        'upload_sec_doc','residance_doc','muqeem_print_doc')
+        'upload_sec_doc','residance_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc')
     def document_uploaded(self):
         for line in self:
             if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \
@@ -673,11 +715,13 @@ class ServiceEnquiry(models.Model):
             line.upload_istiqdam_form_doc or line.upload_family_visa_letter_doc or line.upload_employment_contract_doc or line.upload_cultural_letter_doc or \
             line.upload_family_visit_visa_doc or \
             line.upload_emp_secondment_or_cub_contra_ltr_doc or line.upload_car_loan_doc or line.upload_bank_loan_doc or line.upload_rental_agreement_doc or \
-            line.upload_exception_letter_doc or line.upload_attestation_waiver_letter_doc or line.upload_embassy_letter_doc or line.upload_istiqdam_letter_doc or line.upload_sce_letter_doc or \
+            line.upload_exception_letter_doc or line.upload_attestation_waiver_letter_doc or line.upload_embassy_letter_doc or line.upload_istiqdam_letter_doc or \
             line.upload_bilingual_salary_certificate_doc or line.upload_contract_letter_doc or line.upload_bank_account_opening_letter_doc or line.upload_bank_limit_upgrading_letter_doc or \
             line.upload_final_exit_issuance_doc or line.upload_soa_doc or line.upload_sec_doc:
                 line.doc_uploaded = True
             elif line.upload_confirmation_of_exit_reentry and line.upload_exit_reentry_visa:
+                line.doc_uploaded = True
+            elif line.upload_enjaz_doc and line.upload_issuance_doc:
                 line.doc_uploaded = True
             else:
                 line.doc_uploaded = False
