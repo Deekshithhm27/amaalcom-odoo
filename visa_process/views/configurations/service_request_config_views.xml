@@ -4,7 +4,7 @@
         <field name="name">Service Request</field>
         <field name="model">service.request.config</field>
         <field name="arch" type="xml">
-            <form string="Service Request" create="0">
+            <form string="Service Request">
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <div class="oe_title mb24">
@@ -67,7 +67,7 @@
         <field name="name">Service Request</field>
         <field name="model">service.request.config</field>
         <field name="arch" type="xml">
-            <tree string="Service Request" create="0">
+            <tree string="Service Request">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="service_request_type"/>
