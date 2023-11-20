@@ -78,7 +78,7 @@
                                 attrs="{'invisible': ['|',('state','!=','payment_done'),'|',('assign_govt_emp_one','=',False),'|',('assigned_govt_emp_one','=',True),('service_request','!=','iqama_card_req')]}" groups="visa_process.group_service_request_manager"/>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <div class="oe_title mb24" name="service_enquiry">
-                        <field name="service_request_type" widget="radio" nolabel="1" options="{'horizontal': true}"/>
+                        <field name="service_request_type" widget="radio" nolabel="1" options="{'horizontal': true}" attrs="{'readonly':[('state','!=','draft')]}"/>
                         <field name="process_type" widget="radio" nolabel="1" options="{'horizontal': true}" invisible="1"/>
                         <field name="company_id" invisible="1"/>
                         <field name="currency_id" invisible="1"/>
@@ -778,8 +778,8 @@
                         <page string="Documents">
                             <group>
                                 <group>
-                                    <field name="upload_issuance_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
-                                    <field name="upload_enjaz_doc" attrs="{'readonly': [('state', '!=','submitted')]}"/>
+                                    <field name="upload_issuance_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
+                                    <field name="upload_enjaz_doc" attrs="{'readonly': ['|',('state', '!=','submitted'),('is_service_request_client_spoc','=',True)]}"/>
                                    
                                 </group>
                             </group>
