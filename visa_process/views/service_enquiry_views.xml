@@ -234,6 +234,7 @@
                     <!-- LT Medical Health Insurance Upload end-->
 
                     <!-- SEC Letter start-->
+
                     <group name="ev_sec" attrs="{'invisible': [('service_request', '!=', 'sec')]}">
                         <group>
                             <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
@@ -772,6 +773,10 @@
                             <field name="cost_to_be_borne_by" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             <field name="agency_allocation" attrs="{'readonly': [('state', '!=','draft')]}"/>
                             <field name="coc_for_ewakala"/>
+                        </group>
+                        <group name="new_ev" attrs="{'invisible': [('service_request', '!=', 'new_ev')]}">
+                            <field name="draft_if_any" attrs="{'readonly': [('state', '!=','draft')]}"/>
+                            <field name="letter_print_type_id" widget="many2many_checkboxes" attrs="{'readonly': [('state', '!=','draft')]}"/>
                         </group>
                     </group>
                     <notebook attrs="{'invisible': ['|',('state', '=','draft'),('service_request', '!=', 'new_ev')]}">
