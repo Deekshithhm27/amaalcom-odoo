@@ -52,7 +52,7 @@ class ServiceEnquiry(models.Model):
                 # Create draft.account.move record
                 account_move = self.env['draft.account.move'].create({
                     'client_id': self.client_id.id,
-                    'client_parent_id':self.clinet_id.parent_id.id,
+                    'client_parent_id':self.client_id.parent_id.id,
                     'service_enquiry_id': self.id,
                     'move_type':'service_ticket',
                 })
