@@ -5,6 +5,7 @@ access_payment_approval_admin,access_payment_approval_admin,model_account_paymen
 
 access_payment_approval_client_spoc,access_payment_approval_client_spoc,model_account_payment_approval,visa_process.group_service_request_client_spoc,1,0,0,0
 
+access_account_move_line_client_spoc,access_account_move_line_client_spoc,account.model_account_move_line,visa_process.group_service_request_client_spoc,1,0,0,0
 
 
 access_draft_account_move_user,access_draft_account_move_user,model_draft_account_move,base.group_user,1,1,1,1

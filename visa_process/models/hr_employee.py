@@ -57,6 +57,8 @@ class HrEmployee(models.Model):
     custom_employee_type = fields.Selection([('external','External'),('internal','Internal')],string="Type of user to set System Access",default=lambda self: self.env.user.user_type)
     # below field was overrided from standard and added group
     barcode = fields.Char(string="Badge ID", help="ID used for employee identification.", groups="hr.group_hr_user,visa_process.group_hr_employee,visa_process.group_hr_client", copy=False)
+    first_contract_date = fields.Date(compute='_compute_first_contract_date', groups="hr.group_hr_user,visa_process.group_hr_employee,visa_process.group_hr_client", store=True)
+    contract_warning = fields.Boolean(string='Contract Warning', store=True, compute='_compute_contract_warning', groups="hr.group_hr_user,visa_process.group_hr_employee,visa_process.group_hr_client")
 
 
     @api.model

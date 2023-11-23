@@ -50,6 +50,10 @@ class ClientEmployeeSalaryTracking(models.Model):
                            states={'draft': [('readonly', False)]},
                            default=lambda self: fields.Date.to_string((datetime.now() + relativedelta(months=+1, day=1, days=-1)).date()))
 
+    gosi_charges = fields.Float(string="Gosi Charges")
+
+    
+
     invoice_id = fields.Many2one('account.move',string="Invoice Ref")
     is_invoiced = fields.Boolean(string="Is invoiced",default=False)
 
@@ -101,6 +105,8 @@ class ClientEmployeeSalaryTracking(models.Model):
                 self._check_advances(vals_list, self_comp)
             if 'other_deductions' in vals:
                 self._check_other_deductions(vals_list, self_comp)
+            if 'gosi_charges' not in vals:
+                self._check_gosi_charges(vals_list, self_comp)
             
             if vals.get('name', 'New') == 'New':
                 vals['name'] = self_comp.env['ir.sequence'].next_by_code('client.emp.salary.tracking') or 'New'
@@ -110,6 +116,17 @@ class ClientEmployeeSalaryTracking(models.Model):
         res = super(ClientEmployeeSalaryTracking, self_comp).create(new_vals_list)
 
         return res
+
+    def _check_gosi_charges(self,vals_list, self_comp):
+        for vals in vals_list:
+            gosi_id = self.env['gosi.charges'].search([('id','!=',False)],limit=1)
+            contract_id = self_comp.env['hr.contract'].search([
+                    ('employee_id', '=', vals['employee_id']),
+                    ('state', '=', 'open')
+                ], limit=1)
+            if gosi_id:
+                vals['gosi_charges'] = ((contract_id.wage + contract_id.hra) * float(gosi_id.name))/100
+
 
 
     def _check_arrears(self, vals_list, self_comp):

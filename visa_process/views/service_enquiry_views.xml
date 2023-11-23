@@ -90,8 +90,8 @@
                         <field name="doc_uploaded" invisible="1"/>
                         <field name="final_doc_uploaded" invisible="1"/>
                         <field name="is_service_request_client_spoc" invisible="1"/>
-                        <separator string="Transfer Type" attrs="{'invisible':[('service_request_type','!=','lt_request')]}"/>
-                        <field name="transfer_type" widget="radio" nolabel="1" options="{'horizontal': true}" attrs="{'invisible':[('service_request_type','!=','lt_request')]}"/>
+                        <!-- <separator string="Transfer Type" attrs="{'invisible':[('service_request_type','!=','lt_request')]}"/> -->
+                        <!-- <field name="transfer_type" widget="radio" nolabel="1" options="{'horizontal': true}" attrs="{'invisible':[('service_request_type','!=','lt_request')]}"/> -->
                         <h1>
                            <field name="name" readonly="1"/>
                             

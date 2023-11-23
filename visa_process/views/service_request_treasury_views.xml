@@ -58,6 +58,10 @@
         <field name="arch" type="xml">
             <tree string="Service Request Details">
                 <field name="name"/>
+                <field name="service_request_id"/>
+                <field name="client_parent_id"/>
+                <field name="total_amount"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>

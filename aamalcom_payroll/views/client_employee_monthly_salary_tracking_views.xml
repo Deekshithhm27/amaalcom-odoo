@@ -46,8 +46,6 @@
                             <field name="travel_allowance"/>
                             <field name="other_allowance"/>
                         </group>
-                    </group>
-                    <group>
                         <group string="Allowances">
                             <field name="arrears"/>
                             <field name="advances"/>
@@ -57,12 +55,18 @@
                             <field name="struct_id" invisible="1"/>
                             <field name="client_parent_id" invisible="1"/>
                         </group>
+                    </group>
+                    <group>
+                        
                         <group string="Deductions">
                             <field name="other_deductions"/>
                         </group>
-                        <group>
+                        <group string="">
                             <field name="gross_salary"/>
                             <field name="net_salary" invisible="1"/>
+                        </group>
+                        <group string="Charges">
+                            <field name="gosi_charges"/>
                         </group>
 
                     </group>
@@ -81,6 +85,10 @@
         <field name="arch" type="xml">
             <tree string="Client Employee Monthly Salary Tracking">
                 <field name="name"/>
+                <field name="employee_id"/>
+                <field name="client_emp_sequence"/>
+                <field name="gross_salary"/>
+                <field name="gosi_charges"/>
             </tree>
         </field>
     </record>

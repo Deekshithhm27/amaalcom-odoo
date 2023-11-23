@@ -23,7 +23,9 @@ class ClientEmpSalaryTrackingWizard(models.TransientModel):
 
             basic_salary = sum(employee_records.mapped('wage'))
             hra = sum(employee_records.mapped('hra'))
-            gosi_inv_charge = ((basic_salary + hra) * float(gosi_charge.name))/100
+            sum_gosi_charges = sum(employee_records.mapped('gosi_charges'))
+            # gosi_inv_charge = ((basic_salary + hra) * float(gosi_charge.name))/100
+            gosi_inv_charge = sum_gosi_charges
 
             gross_salary = sum(employee_records.mapped('gross_salary'))
 
@@ -47,6 +49,7 @@ class ClientEmpSalaryTrackingWizard(models.TransientModel):
                 self.env['account.move.salary.line'].create({
                     'move_sal_id': invoice.id,
                     'salary_tracking_id': employee_record.id,
-                    'gosi_charge': ((employee_record.wage + employee_record.hra)* float(gosi_charge.name))/100,
+                    # 'gosi_charge': ((employee_record.wage + employee_record.hra)* float(gosi_charge.name))/100,
+                    'gosi_charge': employee_record.gosi_charges,
                     'client_emp_sequence': employee_record.client_emp_sequence,
                 })

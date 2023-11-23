@@ -8,18 +8,13 @@
     <menuitem id="base_menu_client_contact" name="My Details" groups="visa_process.group_service_request_client_spoc" sequence="1">
         <menuitem id="menu_menu_client_contact" name="Details" action="action_self_contact" sequence="2"/>
     </menuitem>
+    <menuitem id="calendar.mail_menu_calendar" name="Calendar" sequence="3" action="calendar.action_calendar_event" web_icon="calendar,static/description/icon.png" groups="base.group_user"/>
 
     <!-- Enable this if need to display only team members 
     <menuitem name="Employees" id="menu_visa_employees" sequence="3" groups="hr.group_hr_user">
         <menuitem id="menu_hr_employee_self_team_employees" name="Team Employees" action="action_team_employees" sequence="1"/>
     </menuitem> -->
-<!-- 
-    <record id="hr.menu_hr_root" model="ir.ui.menu">
-        <field name="groups_id" eval="[(4, ref('visa_process.group_service_request_administrator'))]"/>
-        <field name="name">Company Employees</field>
-        <field name="parent_id" ref="visa_process.menu_visa_employees"/>
 
-    </record> -->
 
     <menuitem id="menu_base_visa_process" name="Visa Process" sequence="4" groups="visa_process.group_service_request_manager,visa_process.group_service_request_client_spoc,visa_process.group_service_request_employee,visa_process.group_service_request_general_manager,visa_process.group_service_request_finance_manager,visa_process.group_service_request_operations_manager,visa_process.group_service_request_administrator">
         <!-- This menu is visible for clients only -->
@@ -52,6 +47,9 @@
             <menuitem id="menu_local_transfer_manager" name="Local Transfer" sequence="1" action="action_local_transfer_manager"/>
             <menuitem id="menu_employment_visa_manager" name="Employment Visa" sequence="2" action="action_employment_visa_manager"/>
         </menuitem>
+        <menuitem id="menu_base_treasury" name="Treasury" sequence="9" groups="visa_process.group_service_request_finance_manager">
+                <menuitem id="menu_service_request_treasury" name="Service Request Details" sequence="7" action="action_service_request_treasury"/>
+            </menuitem>
         <menuitem id="menu_base_visa_configuration" name=" Configuration" sequence="10" groups="visa_process.group_service_request_manager,visa_process.group_service_request_administrator">
             <menuitem id="menu_hr_employee_company" name="Company" sequence="1" action="action_hr_employee_company"/>
             <menuitem id="menu_base_visa_service_request_config" name="Service Request" sequence="2">
@@ -63,7 +61,7 @@
 			<menuitem id="menu_visa_ref_documents" name="Documents" sequence="4" action="action_visa_ref_documents"/>
             <menuitem id="menu_employment_duration" name="Employment Duration" sequence="5" action="action_employment_duration"/>
             <menuitem id="menu_print_types" name="Letter Print Types" sequence="6" action="action_print_types"/>
-            <menuitem id="menu_service_request_treasury" name="Service Request Details" sequence="7" action="action_service_request_treasury"/>
+
             
             
 
@@ -88,6 +86,12 @@
     <record id="hr.menu_hr_root" model="ir.ui.menu">
         <field name="groups_id" eval="[(3, ref('hr.group_hr_manager')),(3, ref('hr.group_hr_user')),(3, ref('base.group_user'))]"/>
     </record>
+
+    <record id="hr.menu_hr_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('visa_process.group_service_request_hr_manager'))]"/>
+    </record>
+
+    <!-- Modifying sequence of calendar menu -->
 
     
 
