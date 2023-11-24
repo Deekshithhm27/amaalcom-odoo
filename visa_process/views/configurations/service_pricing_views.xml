@@ -18,7 +18,7 @@
                         </h1>
                         <div class="o_row">
                             <group>
-                                <field name="service_request_config_id"/>
+                                <field name="service_request_config_id" options="{'no_create': True}"/>
                                 <field name="service_request" invisible="1"/>
                             </group>
                         </div>
@@ -32,7 +32,9 @@
                 							<field name="company_id" invisible="1"/>
                 							<field name="currency_id" invisible="1"/>
                 							<field name="pricing_id" invisible="1"/>
-		                					<field name="duration_id"/>
+                                            <field name="service_request_config_id" invisible="1"/>
+                                            <field name="service_request_type" invisible="1"/>
+		                					<field name="duration_id" options="{'no_create': True}"/>
 		                					<field name="amount"/>
 		                					<field name="remarks"/>
                 						</group>
@@ -42,7 +44,9 @@
                 					<field name="company_id" invisible="1"/>
                 					<field name="currency_id" invisible="1"/>
                 					<field name="pricing_id" invisible="1"/>
-                					<field name="duration_id"/>
+                                    <field name="service_request_config_id" invisible="1"/>
+                                    <field name="service_request_type" invisible="1"/>
+                					<field name="duration_id" options="{'no_create': True}"/>
                 					<field name="amount"/>
                 					<field name="remarks"/>
                 				</tree>

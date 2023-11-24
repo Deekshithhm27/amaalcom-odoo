@@ -83,8 +83,10 @@ class ServicePricingLine(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.user.company_id)
     currency_id = fields.Many2one('res.currency', string='Currency', store=True, readonly=False,
         related="company_id.currency_id",help="The payment's currency.")
+    service_request_type = fields.Selection([('lt_request','Local Transfer'),('ev_request','Employment Visa')],string="Service Request Type",related="pricing_id.service_request_type")
+    service_request_config_id = fields.Many2one('service.request.config',string="Service Request",related="pricing_id.service_request_config_id")
 
-    duration_id = fields.Many2one('employment.duration',string="Duration")
+    duration_id = fields.Many2one('employment.duration',string="Duration",domain="[('service_request_type','=',service_request_type),('service_request_config_id','=',service_request_config_id)]")
     amount = fields.Monetary(string="Amount")
     remarks = fields.Text(string="Remarks")
 
