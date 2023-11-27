@@ -1,11 +1,27 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models, fields, api, _
-from datetime import datetime
-from odoo.exceptions import ValidationError,UserError
 from dateutil.relativedelta import relativedelta
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
+
+
+from odoo import api, fields, models, Command, _
+from odoo.exceptions import RedirectWarning, UserError, ValidationError, AccessError
+from odoo.tools import float_compare, float_is_zero, date_utils, email_split, email_re, html_escape, is_html_empty
+from odoo.tools.misc import formatLang, format_date, get_lang
+from odoo.osv import expression
+
+from datetime import date, timedelta,datetime
+from collections import defaultdict
+from contextlib import contextmanager
+from itertools import zip_longest
+from hashlib import sha256
+from json import dumps
+
+import ast
+import json
+import re
+import warnings
 
 
 
@@ -14,6 +30,7 @@ class AccountMove(models.Model):
  
     
     draft_invoice_sequence = fields.Char('Draft Invoice Number', copy=False, index=True)
+
 
     state = fields.Selection(selection=[('draft', 'Draft'),
             ('approval_needed', 'Waiting for Approval'),
@@ -32,14 +49,15 @@ class AccountMove(models.Model):
     #             vals['name'] = 'DI/' + sequence_id.sequence.zfill(5)
     #             sequence_id.sequence = str(int(sequence_id.sequence) + 1).zfill(5)
     #     return super(AccountMove, self).create(vals)
-    # @api.model
-    # def create(self, vals):
-    #     print("---------bbbbbbb",vals.get('move_type'))
-    #     print("---------kjjjjjjjjjjjjjbbbbbbb",vals.get('state'))
-    #     # if vals.get('move_type') == 'out_invoice':
-    #     draft_invoice_sequence = self.env['ir.sequence'].next_by_code('account.move.draft.invoice')
-    #     vals['draft_invoice_sequence'] = draft_invoice_sequence
-    #     return super(AccountMove, self).create(vals)
+    @api.model
+    def create(self, vals):
+        print("---------bbbbbbb",vals.get('move_type'))
+        print("---------kjjjjjjjjjjjjjbbbbbbb",vals.get('state'))
+        # if vals.get('move_type') == 'out_invoice':
+        draft_invoice_sequence = self.env['ir.sequence'].next_by_code('account.move.draft.invoice')
+        vals['draft_invoice_sequence'] = draft_invoice_sequence
+        return super(AccountMove, self).create(vals)
+
 
 
     # def unlink(self):

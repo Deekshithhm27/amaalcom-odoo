@@ -29,4 +29,3 @@ access_hr_leave_type_employee,access_hr_leave_type_employee,hr_holidays.model_hr
 
 
 hr_holidays.access_hr_holidays_employee_allocation,hr.holidays.employee.allocation,hr_holidays.model_hr_leave_allocation,base.group_user,1,0,0,0
-
