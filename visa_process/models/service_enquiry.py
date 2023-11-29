@@ -52,7 +52,7 @@ class ServiceEnquiry(models.Model):
                 line.process_type = line.service_request_config_id.process_type
 
     service_request = fields.Selection([('new_ev','Issuance of New EV'),
-        ('sec','SEC Letter'),('hr_card','Issuance for HR card'),
+        ('sec','SEC Letter'),('hr_card','Issuance for HR card'),('transfer_req','Transfer Request Initiation'),
         ('ins_class_upgrade','Medical health insurance Class Upgrade'),
         ('iqama_no_generation','Iqama No generation'),('iqama_card_req','New Physical Iqama Card Request'),
         ('qiwa','Qiwa Contract'),('gosi','GOSI Update'),('iqama_renewal','Iqama Renewal'),('exit_reentry_issuance','Exit Rentry issuance'),
@@ -74,6 +74,8 @@ class ServiceEnquiry(models.Model):
     employee_id = fields.Many2one('hr.employee',domain="[('custom_employee_type', '=', 'external'),('client_id','=',user_id)]",string="Employee",store=True,tracking=True,required=True)
 
     transfer_type = fields.Selection([('to_aamalcom','To Aamalcom'),('to_another_establishment','To another Establishment')],string="Transfer Type")
+    transfer_amount = fields.Float(string="Amount")
+    
 
 
     @api.onchange('employee_id')
@@ -110,8 +112,10 @@ class ServiceEnquiry(models.Model):
     medical_doc = fields.Binary(string="Medical Doc")
 
     upload_hr_card = fields.Binary(string="HR Card Document")
+    upload_jawazat_doc = fields.Binary(string="Jawazat Document")
     upload_payment_doc = fields.Binary(string="Payment Confirmation Document",tracking=True)
     residance_doc = fields.Binary(string="Residance Permit Document")
+    transfer_confirmation_doc = fields.Binary(string="Confirmation of Transfer")
     muqeem_print_doc = fields.Binary(string="Muqeem Print Document")
 
     upload_upgrade_insurance_doc = fields.Binary(string="Confirmation of Insurance upgarde Document")
@@ -389,6 +393,7 @@ class ServiceEnquiry(models.Model):
 
     @api.depends('state','service_request_config_id')
     def update_departments(self):
+        # this method fetches departments configured in service request based on hierarchy
         for line in self:
             department_ids = []
             if line.service_request_config_id.service_department_lines:
@@ -425,6 +430,7 @@ class ServiceEnquiry(models.Model):
 
 
     def open_assign_employee_wizard(self):
+        # this method opens a wizard and passes department based on the hierarchy set in service request
         for line in self:
             treasury_id = self.env['service.request.treasury'].search([('service_request_id','=',line.id)])
             if treasury_id:
@@ -484,7 +490,7 @@ class ServiceEnquiry(models.Model):
             record.service_enquiry_pricing_ids = False
             pricing_id = self.env['service.pricing'].search([('service_request_type', '=', record.service_request_type),
                     ('service_request', '=', record.service_request)], limit=1)
-            if record.aamalcom_pay:
+            if record.aamalcom_pay and record.service_request != 'transfer_req':
                 if pricing_id:
                     for p_line in pricing_id.pricing_line_ids:
                         if p_line.duration_id == record.employment_duration:
@@ -515,6 +521,12 @@ class ServiceEnquiry(models.Model):
                 record.service_enquiry_pricing_ids.create({
                     'name':"Letter Cost",
                     'amount':record.letter_cost,
+                    'service_enquiry_id':record.id,
+                    })
+            if record.service_request == 'transfer_req':
+                record.service_enquiry_pricing_ids.create({
+                    'name':record.service_request_config_id.name,
+                    'amount':record.transfer_amount,
                     'service_enquiry_id':record.id,
                     })
            
@@ -566,7 +578,7 @@ class ServiceEnquiry(models.Model):
             if service_request_treasury_id:
                 line.state = 'approved'
                 line.fin_approver_id = current_employee
-                if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal':
+                if line.service_request == 'hr_card' or line.service_request == 'iqama_renewal' or line.service_request == 'transfer_req':
                     line.assign_govt_emp_two = True
 
 
@@ -699,18 +711,18 @@ class ServiceEnquiry(models.Model):
 
     
     @api.onchange('upload_upgrade_insurance_doc','upload_iqama_card_no_doc','upload_iqama_card_doc','upload_qiwa_doc',
-        'upload_gosi_doc','upload_hr_card','upload_confirmation_of_exit_reentry','upload_exit_reentry_visa','profession_change_doc',
+        'upload_gosi_doc','upload_hr_card','upload_jawazat_doc','upload_confirmation_of_exit_reentry','upload_exit_reentry_visa','profession_change_doc',
         'upload_payment_doc','profession_change_final_doc','upload_salary_certificate_doc','upload_bank_letter_doc','upload_vehicle_lease_doc',
         'upload_apartment_lease_doc','upload_istiqdam_form_doc','upload_family_visa_letter_doc','upload_employment_contract_doc',
         'upload_cultural_letter_doc','upload_family_visit_visa_doc',
         'upload_emp_secondment_or_cub_contra_ltr_doc','upload_car_loan_doc','upload_bank_loan_doc','upload_rental_agreement_doc',
         'upload_exception_letter_doc','upload_attestation_waiver_letter_doc','upload_embassy_letter_doc','upload_istiqdam_letter_doc',
         'upload_bilingual_salary_certificate_doc','upload_contract_letter_doc','upload_bank_account_opening_letter_doc','upload_bank_limit_upgrading_letter_doc','upload_final_exit_issuance_doc','upload_soa_doc',
-        'upload_sec_doc','residance_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc')
+        'upload_sec_doc','residance_doc','transfer_confirmation_doc','muqeem_print_doc','upload_issuance_doc','upload_enjaz_doc')
     def document_uploaded(self):
         for line in self:
             if line.upload_upgrade_insurance_doc or line.upload_iqama_card_no_doc or line.upload_iqama_card_doc or line.upload_qiwa_doc or \
-            line.upload_gosi_doc or line.upload_hr_card or line.profession_change_doc or line.upload_payment_doc or line.profession_change_final_doc or \
+            line.upload_gosi_doc or line.upload_hr_card or line.upload_jawazat_doc or line.profession_change_doc or line.upload_payment_doc or line.profession_change_final_doc or \
             line.upload_salary_certificate_doc or line.upload_bank_letter_doc or line.upload_vehicle_lease_doc or line.upload_apartment_lease_doc or \
             line.upload_istiqdam_form_doc or line.upload_family_visa_letter_doc or line.upload_employment_contract_doc or line.upload_cultural_letter_doc or \
             line.upload_family_visit_visa_doc or \
@@ -726,7 +738,7 @@ class ServiceEnquiry(models.Model):
             else:
                 line.doc_uploaded = False
                 
-            if line.residance_doc and line.muqeem_print_doc:
+            if (line.residance_doc or line.transfer_confirmation_doc) and line.muqeem_print_doc:
                 line.final_doc_uploaded = True
             else:
                 line.final_doc_uploaded = False
